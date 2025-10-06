@@ -3,7 +3,7 @@ using AVLConsole.Structures;
 
 namespace AVLConsole.Objects {
     public class Traversal<K, T> where K : IKey<K> where T : Item {
-        public static void InOrderTraversal(BST<K, T> tree, Action<Node<K, T>>? action) {
+        public static void InOrderTraversal(BST<K, T> tree, Action<BSTNode<K, T>>? action) {
             Console.WriteLine("=== In Order Traversal ===");
 
             if (tree.Root == null) {
@@ -11,8 +11,8 @@ namespace AVLConsole.Objects {
                 return;
             }
 
-            Node<K, T>? current = tree.Root;
-            Stack<Node<K, T>> stack = new();
+            BSTNode<K, T>? current = tree.Root;
+            Stack<BSTNode<K, T>> stack = new();
 
             while (stack.Count > 0 || current != null) {
                 while (current != null) {
@@ -28,7 +28,7 @@ namespace AVLConsole.Objects {
             Console.WriteLine();
         }
 
-        public static void LevelOrderTraversal(BST<K, T> tree, Action<Node<K, T>>? action) {
+        public static void LevelOrderTraversal(BST<K, T> tree, Action<BSTNode<K, T>>? action) {
             Console.WriteLine("=== Level Order Traversal ===");
 
             if (tree.Root == null) {
@@ -36,11 +36,11 @@ namespace AVLConsole.Objects {
                 return;
             }
 
-            Queue<Node<K, T>> queue = new();
+            Queue<BSTNode<K, T>> queue = new();
             queue.Enqueue(tree.Root);
 
             while (queue.Count > 0) {
-                Node<K, T> current = queue.Dequeue();
+                BSTNode<K, T> current = queue.Dequeue();
                 action?.Invoke(current);
 
                 if (current.LeftSon != null) {

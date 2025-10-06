@@ -3,7 +3,7 @@ using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
     public class BST<K, T> where K : IKey<K> where T : Item {
-        public Node<K, T>? Root { get; set; }
+        public BSTNode<K, T>? Root { get; set; }
         public int DataCount { get; set; }
         public int NodeCount { get; set; }
 
@@ -19,7 +19,7 @@ namespace AVLConsole.Structures {
             if (Root == null) {
                 NodeCount++;
                 Root = new(keys, data);
-                Console.WriteLine($"Insert root: {data}");
+                //Console.WriteLine($"Insert root: {data}");
                 return;
             } else {
                 var current = Root;
@@ -27,15 +27,15 @@ namespace AVLConsole.Structures {
                 while (current != null) {
                     if (current.KeyData.Equals(keys)) {
                         current.NodeData.Add(data);
-                        Console.WriteLine($"Insert data: {data}");
+                        //Console.WriteLine($"Insert data: {data}");
                         return;
                     }
 
                     if (current.KeyData.Compare(keys) == -1) {
                         if (current.RightSon == null) {
                             NodeCount++;
-                            current.RightSon = new(keys, data);
-                            Console.WriteLine($"Insert node: {data}");
+                            current.RightSon = new(keys, data) { Parent = current };
+                            //Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
                             current = current.RightSon;
@@ -43,8 +43,8 @@ namespace AVLConsole.Structures {
                     } else {
                         if (current.LeftSon == null) {
                             NodeCount++;
-                            current.LeftSon = new(keys, data);
-                            Console.WriteLine($"Insert node: {data}");
+                            current.LeftSon = new(keys, data) { Parent = current };
+                            //Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
                             current = current.LeftSon;
@@ -64,9 +64,9 @@ namespace AVLConsole.Structures {
 
             while (current != null) {
                 if (current.KeyData.Equals(keys)) {
-                    int index = 0;
-                    Console.WriteLine($"Found node: {keys.GetKeys()}");
-                    current.NodeData.ForEach(item => Console.WriteLine($"{++index}. {item}"));
+                    //int index = 0;
+                    //Console.WriteLine($"Found node: {keys.GetKeys()}");
+                    //current.NodeData.ForEach(item => Console.WriteLine($"{++index}. {item}"));
                     return;
                 }
 

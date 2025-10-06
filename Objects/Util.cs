@@ -3,6 +3,12 @@
         private static Random random = new();
         private static GPSFactory gpsFactory = GPSFactory.GetInstance();
 
+        public static int CompareIntegers(int value1, int value2) {
+            if (value1 < value2) return -1;
+            if (value1 > value2) return 1;
+            return 0;
+        }
+
         public static int CompareDoubles(double value1, double value2) {
             if (value1 < value2) return -1;
             if (value1 > value2) return 1;
