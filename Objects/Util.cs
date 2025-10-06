@@ -29,9 +29,9 @@
         }
 
         public static GPS GenerateRandomGPS(int maxLatitude, int maxLongitude) {
-            double latitudeValue = Math.Round(random.NextDouble() * maxLatitude, 2);
+            double latitudeValue = Math.Round(random.NextDouble() * maxLatitude, 0);
             string latitudeDirection = random.NextDouble() < 0.5 ? "N" : "S";
-            double longitudeValue = Math.Round(random.NextDouble() * maxLongitude, 2);
+            double longitudeValue = Math.Round(random.NextDouble() * maxLongitude, 0);
             string longitudeDirection = random.NextDouble() < 0.5 ? "E" : "W";
             return gpsFactory.GetGPS(latitudeValue, latitudeDirection, longitudeValue, longitudeDirection);
         }

@@ -7,9 +7,9 @@ namespace AVLConsole {
 
             generator.InsertBST(1000);
 
-            //generator.FindBST(1000);
+            generator.FindBST(1000);
 
-            //generator.DeleteBST(1000);
+            //generator.DeleteBST(100);
 
             generator.InOrderTraversalBST();
 

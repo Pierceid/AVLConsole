@@ -1,72 +1,118 @@
-﻿using AVLConsole.Objects;
+﻿using AVLConsole.Entities;
+using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
-    public class BST<T> where T : IKey<T>, new() {
-        public Node<T>? Root { get; set; }
-        public int Count { get; set; }
+    public class BST<K, T> where K : IKey<K> where T : Item {
+        public Node<K, T>? Root { get; set; }
+        public int DataCount { get; set; }
+        public int NodeCount { get; set; }
 
         public BST() {
             Root = null;
-            Count = 0;
+            DataCount = 0;
+            NodeCount = 0;
         }
 
-        public void Insert(T data) {
-            Count++;
+        public void Insert(K keys, T data) {
+            DataCount++;
 
             if (Root == null) {
-                Root = new() { Data = data };
-                Console.WriteLine($"Insert root: {data.GetKeys()}");
+                NodeCount++;
+                Root = new(keys, data);
+                Console.WriteLine($"Insert root: {data}");
                 return;
             } else {
                 var current = Root;
 
                 while (current != null) {
-                    if (current.Data.Compare(data) == -1) {
-                        if (current.Right == null) {
-                            current.Right = new() { Data = data };
-                            Console.WriteLine($"Insert node: {data.GetKeys()}");
+                    if (current.KeyData.Equals(keys)) {
+                        current.NodeData.Add(data);
+                        Console.WriteLine($"Insert data: {data}");
+                        return;
+                    }
+
+                    if (current.KeyData.Compare(keys) == -1) {
+                        if (current.RightSon == null) {
+                            NodeCount++;
+                            current.RightSon = new(keys, data);
+                            Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
-                            current = current.Right;
+                            current = current.RightSon;
                         }
                     } else {
-                        if (current.Left == null) {
-                            current.Left = new() { Data = data };
-                            Console.WriteLine($"Insert node: {data.GetKeys()}");
+                        if (current.LeftSon == null) {
+                            NodeCount++;
+                            current.LeftSon = new(keys, data);
+                            Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
-                            current = current.Left;
+                            current = current.LeftSon;
                         }
                     }
                 }
             }
         }
 
-        public void Find(T data) {
+        public void Find(K keys) {
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return;
             }
 
+            var current = Root;
+
+            while (current != null) {
+                if (current.KeyData.Equals(keys)) {
+                    int index = 0;
+                    Console.WriteLine($"Found node: {keys.GetKeys()}");
+                    current.NodeData.ForEach(item => Console.WriteLine($"{++index}. {item}"));
+                    return;
+                }
+
+                int cmp = current.KeyData.Compare(keys);
+
+                if (cmp < 0) {
+                    if (current.RightSon != null) {
+                        current = current.RightSon;
+                    } else {
+                        break;
+                    }
+                } else {
+                    if (current.LeftSon != null) {
+                        current = current.LeftSon;
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            throw new KeyNotFoundException($"Node not found: {keys.GetKeys()}");
         }
 
-        public void Delete(T data) {
+        public void Delete(K keys, T data) {
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return;
             }
 
-            Count--;
+            DataCount--;
         }
 
         public void InOrderTraversal() {
             int index = 0;
-            Traversal<T>.InOrderTraversal(this, (node) => Console.WriteLine($"{index++}. {node.Data.GetKeys()}"));
+            Traversal<K, T>.LevelOrderTraversal(this, node => {
+                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()}");
+                node.NodeData.ForEach(item => Console.WriteLine(item));
+            });
         }
 
         public void LevelOrderTraversal() {
             int index = 0;
-            Traversal<T>.LevelOrderTraversal(this, node => Console.WriteLine($"{index++}. {node.Data.GetKeys()}"));
+            Traversal<K, T>.LevelOrderTraversal(this, node => {
+                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()}");
+                node.NodeData.ForEach(item => Console.WriteLine(item));
+            });
         }
     }
 }
