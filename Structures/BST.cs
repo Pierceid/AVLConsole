@@ -24,6 +24,7 @@ namespace AVLConsole.Structures {
                     int cmp = keys.Compare(current.KeyData);
 
                     if (cmp == 1) {
+                        // new key > current key
                         if (current.RightSon == null) {
                             current.RightSon = new(keys, data) { Parent = current };
                             return;
@@ -31,6 +32,7 @@ namespace AVLConsole.Structures {
                             current = current.RightSon;
                         }
                     } else {
+                        // new key <= current key
                         if (current.LeftSon == null) {
                             current.LeftSon = new(keys, data) { Parent = current };
                             return;
@@ -50,10 +52,13 @@ namespace AVLConsole.Structures {
                 int cmp = keys.Compare(current.KeyData);
 
                 if (cmp == 1) {
+                    // key to find > current key
                     current = current.RightSon;
                 } else if (cmp == -1) {
+                    // key to find < current key
                     current = current.LeftSon;
                 } else {
+                    // key to find = current key
                     matches.Add(current);
                     current = current.LeftSon;
                 }
@@ -73,33 +78,34 @@ namespace AVLConsole.Structures {
 
             while (stack.Count > 0 || current != null) {
                 while (current != null) {
-                    // skip left subtree if all keys < lower
-                    if (current.KeyData.Compare(lower) == -1) {
-                        current = current.RightSon;
-                        continue;
-                    }
+                    int cmpLower = current.KeyData.Compare(lower);
 
-                    stack.Push(current);
-                    current = current.LeftSon;
+                    if (cmpLower == -1) {
+                        // if current key < lower bound then skip left subtree
+                        current = current.RightSon;
+                    } else {
+                        // if current key >= lower bound then it could contain valid nodes
+                        stack.Push(current);
+                        current = current.LeftSon;
+                    }
                 }
 
                 if (stack.Count == 0) break;
 
                 current = stack.Pop();
 
-                if (current.KeyData.Compare(lower) >= 0 && current.KeyData.Compare(upper) <= 0) {
+                int cmpLowerBound = current.KeyData.Compare(lower);
+                int cmpUpperBound = current.KeyData.Compare(upper);
+
+                if (cmpLowerBound >= 0 && cmpUpperBound <= 0) {
                     matches.Add(current);
                 }
 
-                if (current.KeyData.Compare(upper) == 1) {
-                    break;
-                }
+                // if current key > upper bound then stop
+                if (cmpUpperBound == 1) break;
 
+                // else continue right
                 current = current.RightSon;
-            }
-
-            if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for interval ({lower.GetKeys()} , {upper.GetKeys()})");
             }
 
             return matches;

@@ -125,16 +125,15 @@ namespace AVLConsole.Objects {
         public void IntervalFind(int count) {
             Random random = new();
 
-            var sortedKeys = keyList.OrderBy(k => k.Value).ToList();
-            int n = sortedKeys.Count;
+            int n = keyList.Count;
 
             if (n < 500) return;
 
             for (int i = 0; i < count; i++) {
                 int startIndex = random.Next(0, n - 500);
 
-                Number lower = sortedKeys[startIndex];
-                Number upper = sortedKeys[startIndex + 499];
+                Number lower = keyList[startIndex];
+                Number upper = keyList[startIndex + 499];
 
                 bst.IntervalFind(lower, upper);
             }
@@ -163,6 +162,10 @@ namespace AVLConsole.Objects {
         public void Clear() {
             bst = new();
             keyList.Clear();
+        }
+
+        public void SortKeyList() {
+            keyList = keyList.OrderBy(k => k.Value).DistinctBy(k => k.Value).ToList();
         }
     }
 }
