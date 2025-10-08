@@ -3,33 +3,45 @@ using System.Diagnostics;
 
 namespace AVLConsole {
     internal class Program {
+        private const int insertCount = 10_000_000;
+        private const int deleteCount = 2_000_000;
+        private const int pointFindCount = 5_000_000;
+        private const int intervalFindCount = 1_000_000;
+        private const int minCount = 2_000_000;
+        private const int maxCount = 2_000_000;
+
         static void Main(string[] args) {
-            //Generator generator = new();
-            //generator.InsertBST(1000);
-            //generator.FindBST(1000);
-            //generator.DeleteBST(100);
-            //generator.InOrderTraversalBST();
-            //generator.LevelOrderTraversalBST();
+            TesterBST testerBST = new();
+
+            // INSERTION TEST
+            Benchmark(() => testerBST.Insert(insertCount), "===== INSERTION TEST =====", $"Insert ({insertCount})");
+
+            // DELETE TEST
+            Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
+
+            // POINT FIND TEST
+            Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
+
+            // INTERVAL FIND TEST
+            Benchmark(() => testerBST.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
+
+            // MIN TEST
+            Benchmark(() => { }, "===== MIN TEST =====", $"Find min ({minCount})");
+
+            // MAX TEST
+            Benchmark(() => { }, "===== MAX TEST =====", $"Find max ({maxCount})");
+        }
+
+        static void Benchmark(Action action, string title, string description) {
+            Console.WriteLine(title);
 
             Stopwatch stopwatch = new();
-            Tester tester = new();
-
             stopwatch.Start();
-            tester.InsertBST(10_000_000);
-            Console.WriteLine($"Insert: {stopwatch.Elapsed}");
-
+            action();
             stopwatch.Stop();
-            //stopwatch.Restart();
-            //tester.DeleteBST(2_000_000);
-            //Console.WriteLine($"Delete: {stopwatch.Elapsed}");
 
-            //stopwatch.Restart();
-            //tester.FindBST(5_000_000);
-            //Console.WriteLine($"Find: {stopwatch.Elapsed}");
-
-            tester.InOrderTraversalBST();
-
-            //tester.LevelOrderTraversalBST();
+            Console.WriteLine($"{description}: {stopwatch.Elapsed.TotalSeconds:F2} s");
+            Console.WriteLine();
         }
     }
 }

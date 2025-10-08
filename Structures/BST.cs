@@ -4,47 +4,35 @@ using AVLConsole.Objects;
 namespace AVLConsole.Structures {
     public class BST<K, T> where K : IKey<K> where T : Item {
         public BSTNode<K, T>? Root { get; set; }
-        public int DataCount { get; set; }
         public int NodeCount { get; set; }
 
         public BST() {
             Root = null;
-            DataCount = 0;
             NodeCount = 0;
         }
 
         public void Insert(K keys, T data) {
-            DataCount++;
+            NodeCount++;
 
             if (Root == null) {
-                NodeCount++;
                 Root = new(keys, data);
-                //Console.WriteLine($"Insert root: {data}");
                 return;
             } else {
                 var current = Root;
 
-                while (current != null) {
-                    if (current.KeyData.Equals(keys)) {
-                        current.NodeData.Add(data);
-                        //Console.WriteLine($"Insert data: {data}");
-                        return;
-                    }
+                while (true) {
+                    int cmp = keys.Compare(current.KeyData);
 
-                    if (current.KeyData.Compare(keys) == -1) {
+                    if (cmp == 1) {
                         if (current.RightSon == null) {
-                            NodeCount++;
                             current.RightSon = new(keys, data) { Parent = current };
-                            //Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
                             current = current.RightSon;
                         }
                     } else {
                         if (current.LeftSon == null) {
-                            NodeCount++;
                             current.LeftSon = new(keys, data) { Parent = current };
-                            //Console.WriteLine($"Insert node: {data}");
                             return;
                         } else {
                             current = current.LeftSon;
@@ -54,40 +42,67 @@ namespace AVLConsole.Structures {
             }
         }
 
-        public void Find(K keys) {
-            if (Root == null) {
-                Console.WriteLine("Tree is empty");
-                return;
-            }
-
+        public List<BSTNode<K, T>> PointFind(K keys) {
+            List<BSTNode<K, T>> matches = new();
             var current = Root;
 
             while (current != null) {
-                if (current.KeyData.Equals(keys)) {
-                    //int index = 0;
-                    //Console.WriteLine($"Found node: {keys.GetKeys()}");
-                    //current.NodeData.ForEach(item => Console.WriteLine($"{++index}. {item}"));
-                    return;
-                }
+                int cmp = keys.Compare(current.KeyData);
 
-                int cmp = current.KeyData.Compare(keys);
-
-                if (cmp < 0) {
-                    if (current.RightSon != null) {
-                        current = current.RightSon;
-                    } else {
-                        break;
-                    }
+                if (cmp == 1) {
+                    current = current.RightSon;
+                } else if (cmp == -1) {
+                    current = current.LeftSon;
                 } else {
-                    if (current.LeftSon != null) {
-                        current = current.LeftSon;
-                    } else {
-                        break;
-                    }
+                    matches.Add(current);
+                    current = current.LeftSon;
                 }
             }
 
-            throw new KeyNotFoundException($"Node not found: {keys.GetKeys()}");
+            if (matches.Count == 0) {
+                throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
+            }
+
+            return matches;
+        }
+
+        public List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
+            List<BSTNode<K, T>> matches = new();
+            Stack<BSTNode<K, T>> stack = new();
+            var current = Root;
+
+            while (stack.Count > 0 || current != null) {
+                while (current != null) {
+                    // skip left subtree if all keys < lower
+                    if (current.KeyData.Compare(lower) == -1) {
+                        current = current.RightSon;
+                        continue;
+                    }
+
+                    stack.Push(current);
+                    current = current.LeftSon;
+                }
+
+                if (stack.Count == 0) break;
+
+                current = stack.Pop();
+
+                if (current.KeyData.Compare(lower) >= 0 && current.KeyData.Compare(upper) <= 0) {
+                    matches.Add(current);
+                }
+
+                if (current.KeyData.Compare(upper) == 1) {
+                    break;
+                }
+
+                current = current.RightSon;
+            }
+
+            if (matches.Count == 0) {
+                throw new KeyNotFoundException($"No matches found for interval ({lower.GetKeys()} , {upper.GetKeys()})");
+            }
+
+            return matches;
         }
 
         public void Delete(K keys, T data) {
@@ -95,24 +110,22 @@ namespace AVLConsole.Structures {
                 Console.WriteLine("Tree is empty");
                 return;
             }
-
-            DataCount--;
         }
 
         public void InOrderTraversal() {
             int index = 0;
             Traversal<K, T>.LevelOrderTraversal(this, node => {
-                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()}");
-                node.NodeData.ForEach(item => Console.WriteLine(item));
+                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
             });
+            Console.WriteLine($"\nNode Count: {NodeCount}\n");
         }
 
         public void LevelOrderTraversal() {
             int index = 0;
             Traversal<K, T>.LevelOrderTraversal(this, node => {
-                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()}");
-                node.NodeData.ForEach(item => Console.WriteLine(item));
+                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
             });
+            Console.WriteLine($"\nNode Count: {NodeCount}\n");
         }
     }
 }

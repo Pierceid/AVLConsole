@@ -1,0 +1,168 @@
+﻿using AVLConsole.Structures;
+using System.Diagnostics;
+
+namespace AVLConsole.Objects {
+    public class TesterBST {
+        private BST<Number, Number> bst = new();
+        private List<Number> keyList = new();
+
+        public void InsertCycle(int repCount, int nodeCount) {
+            Stopwatch stopwatch = new();
+
+            stopwatch.Start();
+
+            for (int i = 0; i < repCount; i++) {
+                Insert(nodeCount);
+
+                int step = Math.Max(1, repCount / 10);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / repCount}%");
+                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
+                }
+
+                Clear();
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Insert Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
+        }
+
+        public void PointFindCycle(int repCount, int nodeCount) {
+            Stopwatch stopwatch = new();
+
+            stopwatch.Start();
+
+            for (int i = 0; i < repCount; i++) {
+                PointFind(nodeCount);
+
+                int step = Math.Max(1, repCount / 10);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / repCount}%");
+                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
+                }
+
+                Clear();
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Point Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
+        }
+
+        public void IntervalFindCycle(int repCount, int nodeCount) {
+            Stopwatch stopwatch = new();
+
+            stopwatch.Start();
+
+            for (int i = 0; i < repCount; i++) {
+                PointFind(nodeCount);
+
+                int step = Math.Max(1, repCount / 10);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / repCount}%");
+                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
+                }
+
+                Clear();
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Interval Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
+        }
+
+        public void DeleteCycle(int repCount, int nodeCount) {
+            Stopwatch stopwatch = new();
+
+            stopwatch.Start();
+
+            var tree = bst;
+
+            for (int i = 0; i < repCount; i++) {
+                Delete(nodeCount);
+
+                int step = Math.Max(1, repCount / 10);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / repCount}%");
+                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
+                }
+
+                bst = tree;
+            }
+
+            stopwatch.Stop();
+
+            Console.WriteLine($"Delete Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
+        }
+
+        public void Insert(int count) {
+            Random random = new();
+
+            for (int i = 0; i < count; i++) {
+                int value = random.Next();
+                Number key = new() { Value = value };
+
+                bst.Insert(key, key);
+                keyList.Add(key);
+            }
+        }
+
+        public void PointFind(int count) {
+            Random random = new();
+
+            for (int i = 0; i < count; i++) {
+                Number key = keyList.ElementAt(random.Next(keyList.Count));
+
+                bst.PointFind(key);
+            }
+        }
+
+        public void IntervalFind(int count) {
+            Random random = new();
+
+            var sortedKeys = keyList.OrderBy(k => k.Value).ToList();
+            int n = sortedKeys.Count;
+
+            if (n < 500) return;
+
+            for (int i = 0; i < count; i++) {
+                int startIndex = random.Next(0, n - 500);
+
+                Number lower = sortedKeys[startIndex];
+                Number upper = sortedKeys[startIndex + 499];
+
+                bst.IntervalFind(lower, upper);
+            }
+        }
+
+        public void Delete(int count) {
+            Random random = new();
+
+            for (int i = 0; i < count; i++) {
+                int index = random.Next(keyList.Count);
+                Number key = keyList.ElementAt(index);
+
+                bst.Delete(key, key);
+                keyList.Remove(key);
+            }
+        }
+
+        public void InOrderTraversal() {
+            bst.InOrderTraversal();
+        }
+
+        public void LevelOrderTraversal() {
+            bst.LevelOrderTraversal();
+        }
+
+        public void Clear() {
+            bst = new();
+            keyList.Clear();
+        }
+    }
+}

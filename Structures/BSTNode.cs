@@ -7,22 +7,14 @@ namespace AVLConsole.Structures {
         public BSTNode<K, T>? LeftSon { get; set; }
         public BSTNode<K, T>? RightSon { get; set; }
         public K KeyData { get; set; }
-        public List<T> NodeData { get; set; }
-
-        public BSTNode(K keys) {
-            Parent = null;
-            LeftSon = null;
-            RightSon = null;
-            KeyData = keys;
-            NodeData = new();
-        }
+        public T NodeData { get; set; }
 
         public BSTNode(K keys, T data) {
             Parent = null;
             LeftSon = null;
             RightSon = null;
             KeyData = keys;
-            NodeData = new() { data };
+            NodeData = data;
         }
     }
 }
