@@ -4,6 +4,10 @@ namespace AVLConsole.Objects {
     public class Number : Item, IKey<Number> {
         public int Value { get; set; }
 
+        public Number() {
+            Value = 0;
+        }
+
         public int Compare(Number other) {
             return Util.CompareIntegers(Value, other.Value);
         }

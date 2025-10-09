@@ -3,8 +3,15 @@ using System.Diagnostics;
 
 namespace AVLConsole.Objects {
     public class TesterBST {
-        private BST<Number, Number> bst = new();
-        private List<Number> keyList = new();
+        private BST<Number, Number> bst;
+        private List<Number> keyList;
+        private Random random;
+
+        public TesterBST() {
+            bst = new();
+            keyList = new();
+            random = new();
+        }
 
         public void InsertCycle(int repCount, int nodeCount) {
             Stopwatch stopwatch = new();
@@ -101,8 +108,6 @@ namespace AVLConsole.Objects {
         }
 
         public void Insert(int count) {
-            Random random = new();
-
             for (int i = 0; i < count; i++) {
                 int value = random.Next();
                 Number key = new() { Value = value };
@@ -113,8 +118,6 @@ namespace AVLConsole.Objects {
         }
 
         public void PointFind(int count) {
-            Random random = new();
-
             for (int i = 0; i < count; i++) {
                 Number key = keyList.ElementAt(random.Next(keyList.Count));
 
@@ -123,8 +126,6 @@ namespace AVLConsole.Objects {
         }
 
         public void IntervalFind(int count) {
-            Random random = new();
-
             int n = keyList.Count;
 
             if (n < 500) return;
@@ -140,14 +141,24 @@ namespace AVLConsole.Objects {
         }
 
         public void Delete(int count) {
-            Random random = new();
-
             for (int i = 0; i < count; i++) {
                 int index = random.Next(keyList.Count);
                 Number key = keyList.ElementAt(index);
 
                 bst.Delete(key, key);
                 keyList.Remove(key);
+            }
+        }
+
+        public void GetMinKey(int count) {
+            for (int i = 0; i < count; i++) {
+                bst.GetMinKey();
+            }
+        }
+
+        public void GetMaxKey(int count) {
+            for (int i = 0; i < count; i++) {
+                bst.GetMaxKey();
             }
         }
 

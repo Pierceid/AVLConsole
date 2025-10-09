@@ -1,7 +1,7 @@
 ﻿namespace AVLConsole.Objects {
-    public interface IKey<U> {
-        public int Compare(U other);
-        public bool Equals(U other);
+    public interface IKey<K> {
+        public int Compare(K other);
+        public bool Equals(K other);
         public string GetKeys();
     }
 }

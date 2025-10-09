@@ -108,6 +108,10 @@ namespace AVLConsole.Structures {
                 current = current.RightSon;
             }
 
+            if (matches.Count == 0) {
+                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()} , {upper.GetKeys()})");
+            }
+
             return matches;
         }
 
@@ -116,6 +120,36 @@ namespace AVLConsole.Structures {
                 Console.WriteLine("Tree is empty");
                 return;
             }
+        }
+
+        public K? GetMinKey() {
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return default;
+            }
+
+            var current = Root;
+
+            while (current.LeftSon != null) {
+                current = current.LeftSon;
+            }
+
+            return current.KeyData;
+        }
+
+        public K? GetMaxKey() {
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return default;
+            }
+
+            var current = Root;
+
+            while (current.RightSon != null) {
+                current = current.RightSon;
+            }
+
+            return current.KeyData;
         }
 
         public void InOrderTraversal() {

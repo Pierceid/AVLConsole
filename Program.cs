@@ -21,16 +21,16 @@ namespace AVLConsole {
             //Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
 
             // POINT FIND TEST
-            //Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
+            Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
 
             // INTERVAL FIND TEST
-            Benchmark(() => testerBST.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
+            //Benchmark(() => testerBST.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
 
             // MIN TEST
-            Benchmark(() => { }, "===== MIN TEST =====", $"Find min ({minCount})");
+            Benchmark(() => testerBST.GetMinKey(minCount), "===== MIN TEST =====", $"Find min ({minCount})");
 
             // MAX TEST
-            Benchmark(() => { }, "===== MAX TEST =====", $"Find max ({maxCount})");
+            Benchmark(() => testerBST.GetMaxKey(maxCount), "===== MAX TEST =====", $"Find max ({maxCount})");
         }
 
         static void Benchmark(Action action, string title, string description) {
