@@ -13,9 +13,11 @@ namespace AVLConsole {
         static void Main(string[] args) {
             TesterBST testerBST = new();
 
-            // INSERTION TEST
+            // INSERT TEST
             Benchmark(() => testerBST.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
-            testerBST.SortKeyList();
+
+            // SORT KEY LIST
+            Benchmark(() => testerBST.SortKeyList(), "===== SORT KEY LIST =====", $"Sort ({1})");
 
             // DELETE TEST
             Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");

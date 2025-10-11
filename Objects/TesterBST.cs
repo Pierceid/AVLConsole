@@ -4,12 +4,15 @@ using System.Diagnostics;
 namespace AVLConsole.Objects {
     public class TesterBST {
         private BST<Number, Number> bst;
+
         private List<Number> keyList;
+        private SortedSet<Number> keySet;
         private Random random;
 
         public TesterBST() {
             bst = new();
             keyList = new();
+            keySet = new(Comparer<Number>.Create((a, b) => a.Value.CompareTo(b.Value)));
             random = new();
         }
 
@@ -32,13 +35,11 @@ namespace AVLConsole.Objects {
             }
 
             stopwatch.Stop();
-
             Console.WriteLine($"Insert Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
         }
 
         public void PointFindCycle(int repCount, int nodeCount) {
             Stopwatch stopwatch = new();
-
             stopwatch.Start();
 
             for (int i = 0; i < repCount; i++) {
@@ -55,13 +56,11 @@ namespace AVLConsole.Objects {
             }
 
             stopwatch.Stop();
-
             Console.WriteLine($"Point Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
         }
 
         public void IntervalFindCycle(int repCount, int nodeCount) {
             Stopwatch stopwatch = new();
-
             stopwatch.Start();
 
             for (int i = 0; i < repCount; i++) {
@@ -78,13 +77,11 @@ namespace AVLConsole.Objects {
             }
 
             stopwatch.Stop();
-
             Console.WriteLine($"Interval Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
         }
 
         public void DeleteCycle(int repCount, int nodeCount) {
             Stopwatch stopwatch = new();
-
             stopwatch.Start();
 
             var tree = bst;
@@ -93,7 +90,6 @@ namespace AVLConsole.Objects {
                 Delete(nodeCount);
 
                 int step = Math.Max(1, repCount / 10);
-
                 if ((i + 1) % step == 0) {
                     Console.Write($"{(i + 1) * 100 / repCount}%");
                     Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
@@ -103,7 +99,6 @@ namespace AVLConsole.Objects {
             }
 
             stopwatch.Stop();
-
             Console.WriteLine($"Delete Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
         }
 
@@ -118,41 +113,48 @@ namespace AVLConsole.Objects {
         }
 
         public void PointFind(int count) {
-            for (int i = 0; i < count; i++) {
-                Number key = keyList.ElementAt(random.Next(keyList.Count));
+            if (keySet.Count == 0) return;
 
+            var keys = keySet.ToArray();
+
+            for (int i = 0; i < count; i++) {
+                Number key = keys[random.Next(keys.Length)];
                 bst.PointFind(key);
             }
         }
 
         public void IntervalFind(int count) {
-            int n = keyList.Count;
+            int n = keySet.Count;
 
             if (n < 500) return;
 
+            var keys = keySet.ToArray();
+
             for (int i = 0; i < count; i++) {
                 int startIndex = random.Next(0, n - 500);
-                Number lower = keyList[startIndex];
-                Number upper = keyList[startIndex + 499];
+                Number lower = keys[startIndex];
+                Number upper = keys[startIndex + 499];
 
                 bst.IntervalFind(lower, upper);
-            }
-        }
 
-        public void Delete(int count) {
-            for (int i = 0; i < count; i++) {
-                int index = random.Next(keyList.Count);
-                Number key = keyList.ElementAt(index);
-
-                int step = Math.Max(1, count / 100);
+                int step = Math.Max(1, count / 10);
 
                 if ((i + 1) % step == 0) {
                     Console.Write($"{(i + 1) * 100 / count}%");
                     Console.Write((i + 1) == count ? Environment.NewLine : " - ");
                 }
+            }
+        }
 
+        public void Delete(int count) {
+            if (keySet.Count == 0) return;
+
+            var keys = keySet.ToArray();
+
+            for (int i = 0; i < count; i++) {
+                Number key = keys[random.Next(keys.Length)];
                 bst.Delete(key, key);
-                keyList.Remove(key);
+                keySet.Remove(key);
             }
         }
 
@@ -169,14 +171,13 @@ namespace AVLConsole.Objects {
         }
 
         public void InOrderTraversal() {
-            //bst.InOrderTraversal();
             int count = 0;
             Traversal<Number, Number>.InOrderTraversal(bst, node => count++);
             Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}\n");
+            Console.WriteLine($"Key set count: {keySet.Count}");
         }
 
         public void LevelOrderTraversal() {
-            //bst.LevelOrderTraversal();
             int count = 0;
             Traversal<Number, Number>.LevelOrderTraversal(bst, node => count++);
             Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}\n");
@@ -188,11 +189,11 @@ namespace AVLConsole.Objects {
 
         public void Clear() {
             bst = new();
-            keyList.Clear();
+            keySet.Clear();
         }
 
         public void SortKeyList() {
-            keyList = keyList.OrderBy(k => k.Value).DistinctBy(k => k.Value).ToList();
+            keyList.ForEach(k => keySet.Add(k));
         }
     }
 }
