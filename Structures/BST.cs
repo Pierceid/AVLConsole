@@ -12,34 +12,35 @@ namespace AVLConsole.Structures {
         }
 
         public void Insert(K keys, T data) {
-            NodeCount++;
-
             if (Root == null) {
                 Root = new(keys, data);
+                NodeCount++;
                 return;
-            } else {
-                BSTNode<K, T>? current = Root;
+            }
 
-                while (true) {
-                    int cmp = keys.Compare(current.KeyData);
+            BSTNode<K, T>? current = Root;
 
-                    if (cmp == 1) {
-                        // new key > current key
-                        if (current.RightSon == null) {
-                            current.RightSon = new(keys, data) { Parent = current };
-                            return;
-                        } else {
-                            current = current.RightSon;
-                        }
-                    } else {
-                        // new key <= current key
-                        if (current.LeftSon == null) {
-                            current.LeftSon = new(keys, data) { Parent = current };
-                            return;
-                        } else {
-                            current = current.LeftSon;
-                        }
+            while (true) {
+                int cmp = keys.Compare(current.KeyData);
+
+                if (cmp == 1) {
+                    // new key > current key
+                    if (current.RightSon == null) {
+                        current.RightSon = new(keys, data) { Parent = current };
+                        NodeCount++;
+                        return;
                     }
+
+                    current = current.RightSon;
+                } else {
+                    // new key <= current key
+                    if (current.LeftSon == null) {
+                        current.LeftSon = new(keys, data) { Parent = current };
+                        NodeCount++;
+                        return;
+                    }
+
+                    current = current.LeftSon;
                 }
             }
         }
@@ -141,16 +142,14 @@ namespace AVLConsole.Structures {
 
                 if (parent == null) {
                     Root = child;
-
-                    if (Root != null) Root.Parent = null;
                 } else if (parent.LeftSon == current) {
                     parent.LeftSon = child;
-
-                    if (child != null) child.Parent = parent;
                 } else {
                     parent.RightSon = child;
+                }
 
-                    if (child != null) child.Parent = parent;
+                if (child != null) {
+                    child.Parent = parent;
                 }
 
                 NodeCount--;
@@ -167,7 +166,7 @@ namespace AVLConsole.Structures {
                 pred = pred.RightSon;
             }
 
-            // copy predecessor’s data into current
+            // copy predecessor data into current
             current.KeyData = pred.KeyData;
             current.NodeData = pred.NodeData;
 
@@ -176,12 +175,12 @@ namespace AVLConsole.Structures {
 
             if (predParent.LeftSon == pred) {
                 predParent.LeftSon = predChild;
-
-                if (predChild != null) predChild.Parent = predParent;
             } else {
                 predParent.RightSon = predChild;
+            }
 
-                if (predChild != null) predChild.Parent = predParent;
+            if (predChild != null) {
+                predChild.Parent = predParent;
             }
 
             NodeCount--;

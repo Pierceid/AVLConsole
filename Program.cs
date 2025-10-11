@@ -24,7 +24,7 @@ namespace AVLConsole {
             Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
 
             // INTERVAL FIND TEST
-            //Benchmark(() => testerBST.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
+            Benchmark(() => testerBST.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
 
             // MIN TEST
             Benchmark(() => testerBST.GetMinKey(minCount), "===== MIN TEST =====", $"Find min ({minCount})");

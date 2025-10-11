@@ -65,7 +65,7 @@ namespace AVLConsole.Objects {
             stopwatch.Start();
 
             for (int i = 0; i < repCount; i++) {
-                PointFind(nodeCount);
+                IntervalFind(nodeCount);
 
                 int step = Math.Max(1, repCount / 10);
 
@@ -132,7 +132,6 @@ namespace AVLConsole.Objects {
 
             for (int i = 0; i < count; i++) {
                 int startIndex = random.Next(0, n - 500);
-
                 Number lower = keyList[startIndex];
                 Number upper = keyList[startIndex + 499];
 
@@ -144,6 +143,13 @@ namespace AVLConsole.Objects {
             for (int i = 0; i < count; i++) {
                 int index = random.Next(keyList.Count);
                 Number key = keyList.ElementAt(index);
+
+                int step = Math.Max(1, count / 100);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / count}%");
+                    Console.Write((i + 1) == count ? Environment.NewLine : " - ");
+                }
 
                 bst.Delete(key, key);
                 keyList.Remove(key);

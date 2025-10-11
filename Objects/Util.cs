@@ -1,7 +1,6 @@
 ﻿namespace AVLConsole.Objects {
     public static class Util {
         private static Random random = new();
-        private static GPSFactory gpsFactory = GPSFactory.GetInstance();
 
         public static int CompareIntegers(int value1, int value2) {
             if (value1 < value2) return -1;
@@ -39,13 +38,13 @@
             string latitudeDirection = random.NextDouble() < 0.5 ? "N" : "S";
             double longitudeValue = Math.Round(random.NextDouble() * maxLongitude, 0);
             string longitudeDirection = random.NextDouble() < 0.5 ? "E" : "W";
-            return gpsFactory.GetGPS(latitudeValue, latitudeDirection, longitudeValue, longitudeDirection);
+            return new GPS(latitudeValue, latitudeDirection, longitudeValue, longitudeDirection);
         }
 
         public static GPS ParseGPS(string latitudeValue, string latitudeDirection, string longitudeValue, string longitudeDirection) {
             double parsedLatitudeValue = double.TryParse(latitudeValue, out double latParsed) ? latParsed : double.MaxValue;
             double parsedLongitudeValue = double.TryParse(longitudeValue, out double lonParsed) ? lonParsed : double.MaxValue;
-            return gpsFactory.GetGPS(parsedLatitudeValue, latitudeDirection, parsedLongitudeValue, longitudeDirection);
+            return new GPS(parsedLatitudeValue, latitudeDirection, parsedLongitudeValue, longitudeDirection);
         }
     }
 }
