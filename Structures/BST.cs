@@ -120,6 +120,93 @@ namespace AVLConsole.Structures {
                 Console.WriteLine("Tree is empty");
                 return;
             }
+
+            // find the node to delete
+            BSTNode<K, T>? nodeToDelete = PointFind(keys).FirstOrDefault(p => p.NodeData.EqualsByID(data));
+
+            if (nodeToDelete == null) return;
+
+            BSTNode<K, T>? parent = nodeToDelete.Parent;
+
+            if (nodeToDelete.LeftSon == null && nodeToDelete.RightSon == null) {
+                // leaf node
+                ReplaceParentLink(parent, nodeToDelete, null);
+            } else if (nodeToDelete.LeftSon == null) {
+                // only right child
+                ReplaceParentLink(parent, nodeToDelete, nodeToDelete.RightSon);
+
+                if (nodeToDelete.RightSon != null) {
+                    nodeToDelete.RightSon.Parent = parent;
+                }
+            } else if (nodeToDelete.RightSon == null) {
+                // only left child
+                ReplaceParentLink(parent, nodeToDelete, nodeToDelete.LeftSon);
+
+                if (nodeToDelete.LeftSon != null) {
+                    nodeToDelete.LeftSon.Parent = parent;
+                }
+            } else {
+                // two children
+                BSTNode<K, T>? predecessor = nodeToDelete.LeftSon;
+                BSTNode<K, T>? predecessorParent = nodeToDelete;
+
+                while (predecessor.RightSon != null) {
+                    predecessorParent = predecessor;
+                    predecessor = predecessor.RightSon;
+                }
+
+                // copy predecessor data into current node
+                nodeToDelete.KeyData = predecessor.KeyData;
+                nodeToDelete.NodeData = predecessor.NodeData;
+
+                // remove predecessor node
+                if (predecessor.LeftSon != null) {
+                    ReplaceParentLink(predecessorParent, predecessor, predecessor.LeftSon);
+                    predecessor.LeftSon.Parent = predecessorParent;
+                } else {
+                    ReplaceParentLink(predecessorParent, predecessor, null);
+                }
+            }
+
+            NodeCount--;
+        }
+
+        private void ReplaceParentLink(BSTNode<K, T>? parent, BSTNode<K, T> target, BSTNode<K, T>? newChild) {
+            if (parent == null) {
+                Root = newChild;
+
+                if (Root != null) {
+                    Root.Parent = null;
+                }
+
+                return;
+            }
+
+            if (parent.LeftSon == target) {
+                parent.LeftSon = newChild;
+            } else if (parent.RightSon == target) {
+                parent.RightSon = newChild;
+            }
+        }
+
+        public void UpdateNode(K oldKeys, T oldData, K newKeys, T newData) {
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return;
+            }
+
+            BSTNode<K, T>? nodeToUpdate = PointFind(oldKeys).FirstOrDefault(p => p.NodeData.EqualsByID(oldData));
+
+            if (nodeToUpdate == null) return;
+
+            bool keysChanged = !oldKeys.Equals(newKeys);
+
+            if (!keysChanged) {
+                nodeToUpdate.NodeData = newData;
+            } else {
+                Delete(oldKeys, oldData);
+                Insert(newKeys, newData);
+            }
         }
 
         public K? GetMinKey() {
@@ -154,8 +241,8 @@ namespace AVLConsole.Structures {
 
         public void InOrderTraversal() {
             int index = 0;
-            Traversal<K, T>.LevelOrderTraversal(this, node => {
-                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
+            Traversal<K, T>.InOrderTraversal(this, node => {
+                //Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
             });
             Console.WriteLine($"\nNode Count: {NodeCount}\n");
         }

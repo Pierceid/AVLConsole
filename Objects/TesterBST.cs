@@ -145,6 +145,13 @@ namespace AVLConsole.Objects {
                 int index = random.Next(keyList.Count);
                 Number key = keyList.ElementAt(index);
 
+                int step = Math.Max(1, count / 100);
+
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / count}%");
+                    Console.Write((i + 1) == count ? Environment.NewLine : " - ");
+                }
+
                 bst.Delete(key, key);
                 keyList.Remove(key);
             }

@@ -18,7 +18,7 @@ namespace AVLConsole {
             testerBST.SortKeyList();
 
             // DELETE TEST
-            //Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
+            Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
 
             // POINT FIND TEST
             Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
