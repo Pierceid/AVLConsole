@@ -18,7 +18,7 @@ namespace AVLConsole.Structures {
                 Root = new(keys, data);
                 return;
             } else {
-                var current = Root;
+                BSTNode<K, T>? current = Root;
 
                 while (true) {
                     int cmp = keys.Compare(current.KeyData);
@@ -46,7 +46,7 @@ namespace AVLConsole.Structures {
 
         public List<BSTNode<K, T>> PointFind(K keys) {
             List<BSTNode<K, T>> matches = new();
-            var current = Root;
+            BSTNode<K, T>? current = Root;
 
             while (current != null) {
                 int cmp = keys.Compare(current.KeyData);
@@ -74,7 +74,7 @@ namespace AVLConsole.Structures {
         public List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
             List<BSTNode<K, T>> matches = new();
             Stack<BSTNode<K, T>> stack = new();
-            var current = Root;
+            BSTNode<K, T>? current = Root;
 
             while (stack.Count > 0 || current != null) {
                 while (current != null) {
@@ -121,72 +121,70 @@ namespace AVLConsole.Structures {
                 return;
             }
 
-            // find the node to delete
-            BSTNode<K, T>? nodeToDelete = PointFind(keys).FirstOrDefault(p => p.NodeData.EqualsByID(data));
+            BSTNode<K, T>? current = Root;
+            BSTNode<K, T>? parent = null;
 
-            if (nodeToDelete == null) return;
+            while (current != null) {
+                int cmp = keys.Compare(current.KeyData);
 
-            BSTNode<K, T>? parent = nodeToDelete.Parent;
+                if (cmp == 0 && current.NodeData.EqualsByID(data)) break;
 
-            if (nodeToDelete.LeftSon == null && nodeToDelete.RightSon == null) {
-                // leaf node
-                ReplaceParentLink(parent, nodeToDelete, null);
-            } else if (nodeToDelete.LeftSon == null) {
-                // only right child
-                ReplaceParentLink(parent, nodeToDelete, nodeToDelete.RightSon);
-
-                if (nodeToDelete.RightSon != null) {
-                    nodeToDelete.RightSon.Parent = parent;
-                }
-            } else if (nodeToDelete.RightSon == null) {
-                // only left child
-                ReplaceParentLink(parent, nodeToDelete, nodeToDelete.LeftSon);
-
-                if (nodeToDelete.LeftSon != null) {
-                    nodeToDelete.LeftSon.Parent = parent;
-                }
-            } else {
-                // two children
-                BSTNode<K, T>? predecessor = nodeToDelete.LeftSon;
-                BSTNode<K, T>? predecessorParent = nodeToDelete;
-
-                while (predecessor.RightSon != null) {
-                    predecessorParent = predecessor;
-                    predecessor = predecessor.RightSon;
-                }
-
-                // copy predecessor data into current node
-                nodeToDelete.KeyData = predecessor.KeyData;
-                nodeToDelete.NodeData = predecessor.NodeData;
-
-                // remove predecessor node
-                if (predecessor.LeftSon != null) {
-                    ReplaceParentLink(predecessorParent, predecessor, predecessor.LeftSon);
-                    predecessor.LeftSon.Parent = predecessorParent;
-                } else {
-                    ReplaceParentLink(predecessorParent, predecessor, null);
-                }
+                parent = current;
+                current = (cmp == 1) ? current.RightSon : current.LeftSon;
             }
 
-            NodeCount--;
-        }
+            if (current == null) return;
 
-        private void ReplaceParentLink(BSTNode<K, T>? parent, BSTNode<K, T> target, BSTNode<K, T>? newChild) {
-            if (parent == null) {
-                Root = newChild;
+            // node has 0 or 1 child
+            if (current.LeftSon == null || current.RightSon == null) {
+                BSTNode<K, T>? child = current.LeftSon ?? current.RightSon;
 
-                if (Root != null) {
-                    Root.Parent = null;
+                if (parent == null) {
+                    Root = child;
+
+                    if (Root != null) Root.Parent = null;
+                } else if (parent.LeftSon == current) {
+                    parent.LeftSon = child;
+
+                    if (child != null) child.Parent = parent;
+                } else {
+                    parent.RightSon = child;
+
+                    if (child != null) child.Parent = parent;
                 }
+
+                NodeCount--;
 
                 return;
             }
 
-            if (parent.LeftSon == target) {
-                parent.LeftSon = newChild;
-            } else if (parent.RightSon == target) {
-                parent.RightSon = newChild;
+            // node has 2 children
+            BSTNode<K, T>? predParent = current;
+            BSTNode<K, T>? pred = current.LeftSon;
+
+            while (pred.RightSon != null) {
+                predParent = pred;
+                pred = pred.RightSon;
             }
+
+            // copy predecessor’s data into current
+            current.KeyData = pred.KeyData;
+            current.NodeData = pred.NodeData;
+
+            // delete predecessor node
+            BSTNode<K, T>? predChild = pred.LeftSon;
+
+            if (predParent.LeftSon == pred) {
+                predParent.LeftSon = predChild;
+
+                if (predChild != null) predChild.Parent = predParent;
+            } else {
+                predParent.RightSon = predChild;
+
+                if (predChild != null) predChild.Parent = predParent;
+            }
+
+            NodeCount--;
         }
 
         public void UpdateNode(K oldKeys, T oldData, K newKeys, T newData) {
@@ -215,7 +213,7 @@ namespace AVLConsole.Structures {
                 return default;
             }
 
-            var current = Root;
+            BSTNode<K, T>? current = Root;
 
             while (current.LeftSon != null) {
                 current = current.LeftSon;
@@ -230,7 +228,7 @@ namespace AVLConsole.Structures {
                 return default;
             }
 
-            var current = Root;
+            BSTNode<K, T>? current = Root;
 
             while (current.RightSon != null) {
                 current = current.RightSon;
@@ -242,9 +240,9 @@ namespace AVLConsole.Structures {
         public void InOrderTraversal() {
             int index = 0;
             Traversal<K, T>.InOrderTraversal(this, node => {
-                //Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
+                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
             });
-            Console.WriteLine($"\nNode Count: {NodeCount}\n");
+            Console.WriteLine($"\nNode Count: {NodeCount}, Real Count: {index}\n");
         }
 
         public void LevelOrderTraversal() {
@@ -252,7 +250,7 @@ namespace AVLConsole.Structures {
             Traversal<K, T>.LevelOrderTraversal(this, node => {
                 Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
             });
-            Console.WriteLine($"\nNode Count: {NodeCount}\n");
+            Console.WriteLine($"\nNode Count: {NodeCount}, Real Count: {index}\n");
         }
     }
 }

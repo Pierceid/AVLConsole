@@ -4,7 +4,7 @@ using System.Diagnostics;
 namespace AVLConsole {
     internal class Program {
         private const int insertCount = 10_000_000;
-        private const int deleteCount = 1_000_000;
+        private const int deleteCount = 2_000_000;
         private const int pointFindCount = 5_000_000;
         private const int intervalFindCount = 1_000_000;
         private const int minCount = 2_000_000;
@@ -14,7 +14,7 @@ namespace AVLConsole {
             TesterBST testerBST = new();
 
             // INSERTION TEST
-            Benchmark(() => testerBST.Insert(insertCount), "===== INSERTION TEST =====", $"Insert ({insertCount})");
+            Benchmark(() => testerBST.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
             testerBST.SortKeyList();
 
             // DELETE TEST
@@ -31,6 +31,8 @@ namespace AVLConsole {
 
             // MAX TEST
             Benchmark(() => testerBST.GetMaxKey(maxCount), "===== MAX TEST =====", $"Find max ({maxCount})");
+
+            testerBST.InOrderTraversal();
         }
 
         static void Benchmark(Action action, string title, string description) {

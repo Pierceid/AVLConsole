@@ -145,13 +145,6 @@ namespace AVLConsole.Objects {
                 int index = random.Next(keyList.Count);
                 Number key = keyList.ElementAt(index);
 
-                int step = Math.Max(1, count / 100);
-
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / count}%");
-                    Console.Write((i + 1) == count ? Environment.NewLine : " - ");
-                }
-
                 bst.Delete(key, key);
                 keyList.Remove(key);
             }
@@ -170,11 +163,21 @@ namespace AVLConsole.Objects {
         }
 
         public void InOrderTraversal() {
-            bst.InOrderTraversal();
+            //bst.InOrderTraversal();
+            int count = 0;
+            Traversal<Number, Number>.InOrderTraversal(bst, node => count++);
+            Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}\n");
         }
 
         public void LevelOrderTraversal() {
-            bst.LevelOrderTraversal();
+            //bst.LevelOrderTraversal();
+            int count = 0;
+            Traversal<Number, Number>.LevelOrderTraversal(bst, node => count++);
+            Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}\n");
+        }
+
+        public void GetBSTInfo() {
+            Console.WriteLine($"BST Info: Root = {bst.Root?.KeyData}, Node Count = {bst.NodeCount}");
         }
 
         public void Clear() {
