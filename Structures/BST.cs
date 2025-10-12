@@ -11,7 +11,7 @@ namespace AVLConsole.Structures {
             NodeCount = 0;
         }
 
-        public void Insert(K keys, T data) {
+        public virtual void Insert(K keys, T data) {
             if (Root == null) {
                 Root = new(keys, data);
                 NodeCount++;
@@ -45,78 +45,35 @@ namespace AVLConsole.Structures {
             }
         }
 
-        public List<BSTNode<K, T>> PointFind(K keys) {
-            List<BSTNode<K, T>> matches = new();
+        public virtual void Update(K oldKeys, T oldData, K newKeys, T newData) {
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return;
+            }
+
             BSTNode<K, T>? current = Root;
 
             while (current != null) {
-                int cmp = keys.Compare(current.KeyData);
+                int cmp = oldKeys.Compare(current.KeyData);
 
-                if (cmp == 1) {
-                    // key to find > current key
-                    current = current.RightSon;
-                } else if (cmp == -1) {
-                    // key to find < current key
-                    current = current.LeftSon;
-                } else {
-                    // key to find = current key
-                    matches.Add(current);
-                    current = current.LeftSon;
-                }
+                if (cmp == 0 && current.NodeData.EqualsByID(oldData)) break;
+
+                current = (cmp == 1) ? current.RightSon : current.LeftSon;
             }
 
-            if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
-            }
+            if (current == null) return;
 
-            return matches;
+            bool keysChanged = !oldKeys.Equals(newKeys);
+
+            if (!keysChanged) {
+                current.NodeData = newData;
+            } else {
+                Delete(oldKeys, oldData);
+                Insert(newKeys, newData);
+            }
         }
 
-        public List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
-            List<BSTNode<K, T>> matches = new();
-            Stack<BSTNode<K, T>> stack = new();
-            BSTNode<K, T>? current = Root;
-
-            while (stack.Count > 0 || current != null) {
-                while (current != null) {
-                    int cmpLower = current.KeyData.Compare(lower);
-
-                    if (cmpLower == -1) {
-                        // if current key < lower bound then skip left subtree
-                        current = current.RightSon;
-                    } else {
-                        // if current key >= lower bound then it could contain valid nodes
-                        stack.Push(current);
-                        current = current.LeftSon;
-                    }
-                }
-
-                if (stack.Count == 0) break;
-
-                current = stack.Pop();
-
-                int cmpLowerBound = current.KeyData.Compare(lower);
-                int cmpUpperBound = current.KeyData.Compare(upper);
-
-                if (cmpLowerBound >= 0 && cmpUpperBound <= 0) {
-                    matches.Add(current);
-                }
-
-                // if current key > upper bound then stop
-                if (cmpUpperBound == 1) break;
-
-                // else continue right
-                current = current.RightSon;
-            }
-
-            if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()} , {upper.GetKeys()})");
-            }
-
-            return matches;
-        }
-
-        public void Delete(K keys, T data) {
+        public virtual void Delete(K keys, T data) {
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return;
@@ -186,27 +143,78 @@ namespace AVLConsole.Structures {
             NodeCount--;
         }
 
-        public void UpdateNode(K oldKeys, T oldData, K newKeys, T newData) {
-            if (Root == null) {
-                Console.WriteLine("Tree is empty");
-                return;
+        public virtual List<BSTNode<K, T>> PointFind(K keys) {
+            List<BSTNode<K, T>> matches = new();
+            BSTNode<K, T>? current = Root;
+
+            while (current != null) {
+                int cmp = keys.Compare(current.KeyData);
+
+                if (cmp == 1) {
+                    // key to find > current key
+                    current = current.RightSon;
+                } else if (cmp == -1) {
+                    // key to find < current key
+                    current = current.LeftSon;
+                } else {
+                    // key to find = current key
+                    matches.Add(current);
+                    current = current.LeftSon;
+                }
             }
 
-            BSTNode<K, T>? nodeToUpdate = PointFind(oldKeys).FirstOrDefault(p => p.NodeData.EqualsByID(oldData));
-
-            if (nodeToUpdate == null) return;
-
-            bool keysChanged = !oldKeys.Equals(newKeys);
-
-            if (!keysChanged) {
-                nodeToUpdate.NodeData = newData;
-            } else {
-                Delete(oldKeys, oldData);
-                Insert(newKeys, newData);
+            if (matches.Count == 0) {
+                throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
             }
+
+            return matches;
         }
 
-        public K? GetMinKey() {
+        public virtual List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
+            List<BSTNode<K, T>> matches = new();
+            Stack<BSTNode<K, T>> stack = new();
+            BSTNode<K, T>? current = Root;
+
+            while (stack.Count > 0 || current != null) {
+                while (current != null) {
+                    int cmpLower = current.KeyData.Compare(lower);
+
+                    if (cmpLower == -1) {
+                        // if current key < lower bound then skip left subtree
+                        current = current.RightSon;
+                    } else {
+                        // if current key >= lower bound then it could contain valid nodes
+                        stack.Push(current);
+                        current = current.LeftSon;
+                    }
+                }
+
+                if (stack.Count == 0) break;
+
+                current = stack.Pop();
+
+                int cmpLowerBound = current.KeyData.Compare(lower);
+                int cmpUpperBound = current.KeyData.Compare(upper);
+
+                if (cmpLowerBound >= 0 && cmpUpperBound <= 0) {
+                    matches.Add(current);
+                }
+
+                // if current key > upper bound then stop
+                if (cmpUpperBound == 1) break;
+
+                // else continue right
+                current = current.RightSon;
+            }
+
+            if (matches.Count == 0) {
+                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()} , {upper.GetKeys()})");
+            }
+
+            return matches;
+        }
+
+        public virtual K? GetMinKey() {
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return default;
@@ -221,7 +229,7 @@ namespace AVLConsole.Structures {
             return current.KeyData;
         }
 
-        public K? GetMaxKey() {
+        public virtual K? GetMaxKey() {
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return default;

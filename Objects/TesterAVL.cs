@@ -2,13 +2,13 @@
 using System.Diagnostics;
 
 namespace AVLConsole.Objects {
-    public class TesterBST {
-        private BST<Number, Number> bst;
+    public class TesterAVL {
+        private AVL<Number, Number> avl;
         private List<Number> keyList;
         private Random random;
 
-        public TesterBST() {
-            bst = new();
+        public TesterAVL() {
+            avl = new();
             keyList = new();
             random = new();
         }
@@ -18,7 +18,7 @@ namespace AVLConsole.Objects {
                 int value = random.Next();
                 Number key = new() { Value = value };
 
-                bst.Insert(key, key);
+                avl.Insert(key, key);
 
                 int step = Math.Max(1, count / 10);
                 if ((i + 1) % step == 0) {
@@ -40,7 +40,7 @@ namespace AVLConsole.Objects {
                 Number newKey = new() { Value = newValue };
                 Number newData = newKey;
 
-                bst.Update(oldKey, oldData, newKey, newData);
+                avl.Update(oldKey, oldData, newKey, newData);
 
                 keyList[idx] = newKey;
 
@@ -59,7 +59,7 @@ namespace AVLConsole.Objects {
                 int idx = random.Next(keyList.Count);
                 Number key = keyList[idx];
 
-                bst.Delete(key, key);
+                avl.Delete(key, key);
 
                 int lastIndex = keyList.Count - 1;
                 keyList[idx] = keyList[lastIndex];
@@ -78,7 +78,7 @@ namespace AVLConsole.Objects {
 
             for (int i = 0; i < count; i++) {
                 Number key = keyList[random.Next(keyList.Count)];
-                bst.PointFind(key);
+                avl.PointFind(key);
 
                 int step = Math.Max(1, count / 10);
                 if ((i + 1) % step == 0) {
@@ -98,7 +98,7 @@ namespace AVLConsole.Objects {
                 Number lower = new() { Value = keyList[start].Value };
                 Number upper = new() { Value = keyList[start + 499].Value };
 
-                bst.IntervalFind(lower, upper);
+                avl.IntervalFind(lower, upper);
 
                 int step = Math.Max(1, count / 10);
                 if ((i + 1) % step == 0) {
@@ -110,32 +110,32 @@ namespace AVLConsole.Objects {
 
         public void GetMinKey(int count) {
             for (int i = 0; i < count; i++) {
-                bst.GetMinKey();
+                avl.GetMinKey();
             }
         }
 
         public void GetMaxKey(int count) {
             for (int i = 0; i < count; i++) {
-                bst.GetMaxKey();
+                avl.GetMaxKey();
             }
         }
 
         public void InOrderTraversal() {
             int count = 0;
-            Traversal<Number, Number>.InOrderTraversal(bst, node => count++);
-            Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}");
+            Traversal<Number, Number>.InOrderTraversal(avl, node => count++);
+            Console.WriteLine($"Node Count: {avl.NodeCount}, Real Count: {count}");
             Console.WriteLine();
         }
 
         public void LevelOrderTraversal() {
             int count = 0;
-            Traversal<Number, Number>.LevelOrderTraversal(bst, node => count++);
-            Console.WriteLine($"Node Count: {bst.NodeCount}, Real Count: {count}");
+            Traversal<Number, Number>.LevelOrderTraversal(avl, node => count++);
+            Console.WriteLine($"Node Count: {avl.NodeCount}, Real Count: {count}");
             Console.WriteLine();
         }
 
-        public void GetBSTInfo() {
-            Console.WriteLine($"BST Info: Root = {bst.Root?.KeyData}, Node Count = {bst.NodeCount}");
+        public void GetAVLInfo() {
+            Console.WriteLine($"AVL Info: Root = {avl.Root?.KeyData}, Node Count = {avl.NodeCount}");
             Console.WriteLine();
         }
 
@@ -144,7 +144,7 @@ namespace AVLConsole.Objects {
 
             int count = 0;
 
-            Traversal<Number, Number>.InOrderTraversal(bst, node => {
+            Traversal<Number, Number>.InOrderTraversal(avl, node => {
                 count++;
                 keyList.Add(node.NodeData);
             });
@@ -154,7 +154,7 @@ namespace AVLConsole.Objects {
         }
 
         public void Clear() {
-            bst = new();
+            avl = new();
             keyList.Clear();
         }
 
