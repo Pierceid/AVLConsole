@@ -24,8 +24,6 @@ namespace AVLConsole.Objects {
                 action?.Invoke(current);
                 current = current.RightSon;
             }
-
-            Console.WriteLine();
         }
 
         public static void LevelOrderTraversal(BST<K, T> tree, Action<BSTNode<K, T>>? action) {
@@ -51,8 +49,6 @@ namespace AVLConsole.Objects {
                     queue.Enqueue(current.RightSon);
                 }
             }
-
-            Console.WriteLine();
         }
     }
 }

@@ -16,11 +16,14 @@ namespace AVLConsole {
             // INSERT TEST
             Benchmark(() => testerBST.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
 
-            // SORT KEY LIST
-            Benchmark(() => testerBST.SortKeyList(), "===== SORT KEY LIST =====", $"Sort ({1})");
+            // GET KEYS
+            testerBST.GetKeys();
 
             // DELETE TEST
             Benchmark(() => testerBST.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
+
+            // GET KEYS
+            testerBST.GetKeys();
 
             // POINT FIND TEST
             Benchmark(() => testerBST.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
