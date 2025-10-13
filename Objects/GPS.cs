@@ -29,12 +29,6 @@
             }
         }
 
-        public bool Equals(GPS other) {
-            return LatitudeValue == other.LatitudeValue && LongitudeValue == other.LongitudeValue;
-            //return LatitudeValue == other.LatitudeValue && LatitudeDirection == other.LatitudeDirection &&
-            //    LongitudeValue == other.LongitudeValue && LongitudeDirection == other.LongitudeDirection;
-        }
-
         public string GetKeys() {
             return $"GPS,{Util.FormatDoubleForExport(LatitudeValue)},{LatitudeDirection}," +
                 $"{Util.FormatDoubleForExport(LongitudeValue)},{LongitudeDirection}";

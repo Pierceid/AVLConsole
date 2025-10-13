@@ -12,16 +12,8 @@ namespace AVLConsole.Objects {
             return Util.CompareIntegers(Value, other.Value);
         }
 
-        public bool Equals(Number other) {
-            return Value == other.Value;
-        }
-
         public string GetKeys() {
             return $"Number,{Value}";
-        }
-
-        public override void PrintInfo() {
-            Console.WriteLine($"Number: {Value}");
         }
 
         public override string GetInfo() {

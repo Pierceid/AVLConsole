@@ -12,10 +12,6 @@ namespace AVLConsole.Entities {
             Position = position;
         }
 
-        public override void PrintInfo() {
-            Console.WriteLine($"Estate: {Number} - {Description} - [{Position.GetKeys()}]");
-        }
-
         public override string GetInfo() {
             return $"Estate,{Id},{Number},{Description},{Position.GetKeys()}";
         }

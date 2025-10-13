@@ -1,5 +1,4 @@
 ﻿using AVLConsole.Structures;
-using System.Diagnostics;
 
 namespace AVLConsole.Objects {
     public class TesterAVL {
@@ -13,12 +12,95 @@ namespace AVLConsole.Objects {
             random = new();
         }
 
+        public void TestFunctions(int count) {
+            int insertCount = 0;
+            int deleteCount = 0;
+            int findCount = 0;
+
+            for (int i = 0; i < count; i++) {
+                double rng = random.NextDouble();
+
+                if (rng < 1) {
+                    int value = random.Next();
+                    Number key = new() { Value = value };
+
+                    try {
+                        avl.Insert(key, key);
+
+                        keyList.Add(key);
+
+                        insertCount++;
+                    } catch (InvalidOperationException) {
+                        i--;
+                        continue;
+                    }
+                } else if (rng < 0.75) {
+                    if (keyList.Count == 0) {
+                        i--;
+                        continue;
+                    }
+
+                    int idx = random.Next(keyList.Count);
+                    Number key = keyList[idx];
+
+                    avl.Delete(key, key);
+
+                    int lastIndex = keyList.Count - 1;
+                    keyList[idx] = keyList[lastIndex];
+                    keyList.RemoveAt(lastIndex);
+
+                    try {
+                        var match = avl.PointFind(key);
+                        if (match != null) {
+                            throw new InvalidDataException($"Deleted key found: {key}");
+                        }
+                    } catch (KeyNotFoundException) { }
+
+                    deleteCount++;
+                } else {
+                    if (keyList.Count == 0) {
+                        i--; continue;
+                    }
+
+                    Number key = keyList[random.Next(keyList.Count)];
+
+                    avl.PointFind(key);
+
+                    findCount++;
+                }
+
+                int step = Math.Max(1, count / 10);
+                if ((i + 1) % step == 0) {
+                    Console.Write($"{(i + 1) * 100 / count}%");
+                    Console.Write((i + 1) == count ? Environment.NewLine : " - ");
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine(
+                $"Stats →\n" +
+                $"  Inserts: {insertCount}\n" +
+                $"  Deletes: {deleteCount}\n" +
+                $"  Finds: {findCount}\n" +
+                $"  Node count: {insertCount - deleteCount}"
+            );
+            Console.WriteLine();
+
+            GetKeys();
+        }
+
         public void Insert(int count) {
             for (int i = 0; i < count; i++) {
                 int value = random.Next();
                 Number key = new() { Value = value };
 
-                avl.Insert(key, key);
+                try {
+                    avl.Insert(key, key);
+                    keyList.Add(key);
+                } catch (InvalidOperationException) {
+                    i--;
+                    continue;
+                }
 
                 int step = Math.Max(1, count / 10);
                 if ((i + 1) % step == 0) {
@@ -41,7 +123,6 @@ namespace AVLConsole.Objects {
                 Number newData = newKey;
 
                 avl.Update(oldKey, oldData, newKey, newData);
-
                 keyList[idx] = newKey;
 
                 int step = Math.Max(1, count / 10);
@@ -89,16 +170,23 @@ namespace AVLConsole.Objects {
         }
 
         public void IntervalFind(int count) {
-            if (keyList.Count < 500) return;
+            int length = 500;
+
+            if (keyList.Count < length) return;
 
             int n = keyList.Count;
 
             for (int i = 0; i < count; i++) {
-                int start = random.Next(0, n - 500);
+                int start = random.Next(0, n - length);
                 Number lower = new() { Value = keyList[start].Value };
-                Number upper = new() { Value = keyList[start + 499].Value };
+                Number upper = new() { Value = keyList[start + length - 1].Value };
 
-                avl.IntervalFind(lower, upper);
+                var matches = avl.IntervalFind(lower, upper);
+                var expected = keyList.GetRange(start, length);
+
+                if (matches.Count != expected.Count || !matches.Select(m => m.KeyData.Value).SequenceEqual(expected.Select(e => e.Value))) {
+                    throw new InvalidDataException($"IntervalFind mismatch: expected {expected.Count}, got {matches.Count} (range {lower.Value}-{upper.Value})");
+                }
 
                 int step = Math.Max(1, count / 10);
                 if ((i + 1) % step == 0) {
@@ -156,106 +244,6 @@ namespace AVLConsole.Objects {
         public void Clear() {
             avl = new();
             keyList.Clear();
-        }
-
-        public void InsertCycle(int repCount, int nodeCount) {
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            for (int i = 0; i < repCount; i++) {
-                Insert(nodeCount);
-
-                int step = Math.Max(1, repCount / 10);
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / repCount}%");
-                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
-                }
-
-                Clear();
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Insert Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
-        }
-
-        public void UpdateCycle(int repCount, int nodeCount) {
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            for (int i = 0; i < repCount; i++) {
-                Update(nodeCount);
-
-                int step = Math.Max(1, repCount / 10);
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / repCount}%");
-                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
-                }
-
-                Clear();
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Update Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
-        }
-
-        public void DeleteCycle(int repCount, int nodeCount) {
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            for (int i = 0; i < repCount; i++) {
-                Delete(nodeCount);
-
-                int step = Math.Max(1, repCount / 10);
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / repCount}%");
-                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
-                }
-
-                Clear();
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Delete Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
-        }
-
-        public void PointFindCycle(int repCount, int nodeCount) {
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            for (int i = 0; i < repCount; i++) {
-                PointFind(nodeCount);
-
-                int step = Math.Max(1, repCount / 10);
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / repCount}%");
-                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
-                }
-
-                Clear();
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Point Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
-        }
-
-        public void IntervalFindCycle(int repCount, int nodeCount) {
-            Stopwatch stopwatch = new();
-            stopwatch.Start();
-
-            for (int i = 0; i < repCount; i++) {
-                IntervalFind(nodeCount);
-
-                int step = Math.Max(1, repCount / 10);
-                if ((i + 1) % step == 0) {
-                    Console.Write($"{(i + 1) * 100 / repCount}%");
-                    Console.Write((i + 1) == repCount ? Environment.NewLine : " - ");
-                }
-
-                Clear();
-            }
-
-            stopwatch.Stop();
-            Console.WriteLine($"Interval Find Cycle ({repCount}): {stopwatch.ElapsedMilliseconds / repCount} ms");
         }
     }
 }

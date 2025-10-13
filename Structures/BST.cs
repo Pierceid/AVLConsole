@@ -23,8 +23,15 @@ namespace AVLConsole.Structures {
             while (true) {
                 int cmp = keys.Compare(current.KeyData);
 
-                if (cmp == 1) {
-                    // new key > current key
+                if (cmp == -1) {
+                    if (current.LeftSon == null) {
+                        current.LeftSon = new(keys, data) { Parent = current };
+                        NodeCount++;
+                        return;
+                    }
+
+                    current = current.LeftSon;
+                } else if (cmp == 1) {
                     if (current.RightSon == null) {
                         current.RightSon = new(keys, data) { Parent = current };
                         NodeCount++;
@@ -33,14 +40,7 @@ namespace AVLConsole.Structures {
 
                     current = current.RightSon;
                 } else {
-                    // new key <= current key
-                    if (current.LeftSon == null) {
-                        current.LeftSon = new(keys, data) { Parent = current };
-                        NodeCount++;
-                        return;
-                    }
-
-                    current = current.LeftSon;
+                    throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.GetKeys()})");
                 }
             }
         }
@@ -56,9 +56,9 @@ namespace AVLConsole.Structures {
             while (current != null) {
                 int cmp = oldKeys.Compare(current.KeyData);
 
-                if (cmp == 0 && current.NodeData.EqualsByID(oldData)) break;
+                if (cmp == 0) break;
 
-                current = (cmp == 1) ? current.RightSon : current.LeftSon;
+                current = (cmp == -1) ? current.LeftSon : current.RightSon;
             }
 
             if (current == null) return;
@@ -85,15 +85,14 @@ namespace AVLConsole.Structures {
             while (current != null) {
                 int cmp = keys.Compare(current.KeyData);
 
-                if (cmp == 0 && current.NodeData.EqualsByID(data)) break;
+                if (cmp == 0) break;
 
                 parent = current;
-                current = (cmp == 1) ? current.RightSon : current.LeftSon;
+                current = (cmp == -1) ? current.LeftSon : current.RightSon;
             }
 
             if (current == null) return;
 
-            // node has 0 or 1 child
             if (current.LeftSon == null || current.RightSon == null) {
                 BSTNode<K, T>? child = current.LeftSon ?? current.RightSon;
 
@@ -114,7 +113,6 @@ namespace AVLConsole.Structures {
                 return;
             }
 
-            // node has 2 children
             BSTNode<K, T>? predParent = current;
             BSTNode<K, T>? pred = current.LeftSon;
 
@@ -123,11 +121,9 @@ namespace AVLConsole.Structures {
                 pred = pred.RightSon;
             }
 
-            // copy predecessor data into current
             current.KeyData = pred.KeyData;
             current.NodeData = pred.NodeData;
 
-            // delete predecessor node
             BSTNode<K, T>? predChild = pred.LeftSon;
 
             if (predParent.LeftSon == pred) {
@@ -143,31 +139,22 @@ namespace AVLConsole.Structures {
             NodeCount--;
         }
 
-        public virtual List<BSTNode<K, T>> PointFind(K keys) {
-            List<BSTNode<K, T>> matches = new();
+        public virtual BSTNode<K, T> PointFind(K keys) {
             BSTNode<K, T>? current = Root;
 
             while (current != null) {
                 int cmp = keys.Compare(current.KeyData);
 
-                if (cmp == 1) {
-                    // key to find > current key
+                if (cmp == -1) {
+                    current = current.LeftSon;
+                } else if (cmp == 1) {
                     current = current.RightSon;
-                } else if (cmp == -1) {
-                    // key to find < current key
-                    current = current.LeftSon;
                 } else {
-                    // key to find = current key
-                    matches.Add(current);
-                    current = current.LeftSon;
+                    return current;
                 }
             }
 
-            if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
-            }
-
-            return matches;
+            throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
         }
 
         public virtual List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
@@ -180,10 +167,8 @@ namespace AVLConsole.Structures {
                     int cmpLower = current.KeyData.Compare(lower);
 
                     if (cmpLower == -1) {
-                        // if current key < lower bound then skip left subtree
                         current = current.RightSon;
                     } else {
-                        // if current key >= lower bound then it could contain valid nodes
                         stack.Push(current);
                         current = current.LeftSon;
                     }
@@ -200,10 +185,8 @@ namespace AVLConsole.Structures {
                     matches.Add(current);
                 }
 
-                // if current key > upper bound then stop
                 if (cmpUpperBound == 1) break;
 
-                // else continue right
                 current = current.RightSon;
             }
 
