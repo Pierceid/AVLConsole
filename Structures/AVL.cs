@@ -5,75 +5,39 @@ namespace AVLConsole.Structures {
     public class AVL<K, T> : BST<K, T> where K : IKey<K> where T : Item {
         public override void Insert(K keys, T data) {
             if (Root == null) {
-                Root = new(keys, data);
+                Root = new AVLNode<K, T>(keys, data);
                 NodeCount++;
                 return;
             }
 
-            Stack<AVLNode<K, T>> path = new();
-            BSTNode<K, T>? current = Root;
+            AVLNode<K, T> current = (AVLNode<K, T>)Root;
 
+            // standard BST insert
             while (true) {
                 int cmp = keys.Compare(current.KeyData);
 
-                if (cmp == -1) {
+                if (cmp < 0) {
                     if (current.LeftSon == null) {
-                        current.LeftSon = new(keys, data) { Parent = current };
+                        current.LeftSon = new AVLNode<K, T>(keys, data) { Parent = current };
                         NodeCount++;
+                        current = (AVLNode<K, T>)current.LeftSon;
                         break;
                     }
-
-                    current = current.LeftSon;
-                } else if (cmp == 1) {
+                    current = (AVLNode<K, T>)current.LeftSon;
+                } else if (cmp > 0) {
                     if (current.RightSon == null) {
-                        current.RightSon = new(keys, data) { Parent = current };
+                        current.RightSon = new AVLNode<K, T>(keys, data) { Parent = current };
                         NodeCount++;
+                        current = (AVLNode<K, T>)current.RightSon;
                         break;
                     }
-
-                    current = current.RightSon;
+                    current = (AVLNode<K, T>)current.RightSon;
                 } else {
                     throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.GetKeys()})");
                 }
             }
 
-            while (path.Count > 0) {
-                AVLNode<K, T> parent = path.Pop();
-
-                if (parent.RightSon == current) {
-                    parent.BalanceFactor++;
-                } else if (parent.LeftSon == current) {
-                    parent.BalanceFactor--;
-                }
-
-                if (parent.BalanceFactor == 0) break;
-
-                if (parent.BalanceFactor < -1) {
-                    // left heavy
-                    AVLNode<K, T> left = (AVLNode<K, T>)parent.LeftSon!;
-
-                    if (left.BalanceFactor < 0) {
-                        parent = RotateRight(parent);
-                    } else {
-                        parent.LeftSon = RotateLeft(left);
-                        parent = RotateRight(parent);
-                    }
-
-                    break;
-                } else if (parent.BalanceFactor > 1) {
-                    // right heavy
-                    AVLNode<K, T> right = (AVLNode<K, T>)parent.RightSon!;
-
-                    if (right.BalanceFactor > 0) {
-                        parent = RotateLeft(parent);
-                    } else {
-                        parent.RightSon = RotateRight(right);
-                        parent = RotateLeft(parent);
-                    }
-
-                    break;
-                }
-            }
+            RebalanceAfterInsert(current);
 
             while (Root.Parent != null) {
                 Root = (AVLNode<K, T>)Root.Parent;
@@ -108,44 +72,121 @@ namespace AVLConsole.Structures {
             return base.GetMaxKey();
         }
 
-        private AVLNode<K, T> RotateRight(AVLNode<K, T> rootNode) {
-            AVLNode<K, T> leftChild = (AVLNode<K, T>)rootNode.LeftSon!;
-            AVLNode<K, T>? rightSubtreeOfLeftChild = (AVLNode<K, T>?)leftChild.RightSon;
+        private void RebalanceAfterInsert(AVLNode<K, T> node) {
+            AVLNode<K, T>? current = node;
 
-            leftChild.RightSon = rootNode;
-            rootNode.LeftSon = rightSubtreeOfLeftChild;
+            while (current?.Parent is AVLNode<K, T> parent) {
+                if (parent.LeftSon == current) {
+                    parent.BalanceFactor--;
+                } else if (parent.RightSon == current) {
+                    parent.BalanceFactor++;
+                }
 
-            if (rightSubtreeOfLeftChild != null) {
-                rightSubtreeOfLeftChild.Parent = rootNode;
+                if (parent.BalanceFactor == 0) break;
+
+                if (Math.Abs(parent.BalanceFactor) == 1) {
+                    current = parent;
+                    continue;
+                }
+
+                if (parent.BalanceFactor < -1) {
+                    if (parent.LeftSon is not AVLNode<K, T> left) return;
+
+                    if (left.BalanceFactor <= 0) {
+                        RotateRight(parent);
+                    } else {
+                        RotateLeft(left);
+                        RotateRight(parent);
+                    }
+                } else if (parent.BalanceFactor > 1) {
+                    if (parent.RightSon is not AVLNode<K, T> right) return;
+
+                    if (right.BalanceFactor >= 0) {
+                        RotateLeft(parent);
+                    } else {
+                        RotateRight(right);
+                        RotateLeft(parent);
+                    }
+                }
+
+                break;
             }
-
-            leftChild.Parent = rootNode.Parent;
-            rootNode.Parent = leftChild;
-
-            rootNode.BalanceFactor = rootNode.BalanceFactor - 1 - Math.Max(leftChild.BalanceFactor, 0);
-            leftChild.BalanceFactor = leftChild.BalanceFactor - 1 + Math.Min(rootNode.BalanceFactor, 0);
-
-            return leftChild;
         }
 
         private AVLNode<K, T> RotateLeft(AVLNode<K, T> rootNode) {
-            AVLNode<K, T> rightChild = (AVLNode<K, T>)rootNode.RightSon!;
-            AVLNode<K, T>? leftSubtreeOfRightChild = (AVLNode<K, T>?)rightChild.LeftSon;
-
-            rightChild.LeftSon = rootNode;
-            rootNode.RightSon = leftSubtreeOfRightChild;
-
-            if (leftSubtreeOfRightChild != null) {
-                leftSubtreeOfRightChild.Parent = rootNode;
+            if (rootNode.RightSon is not AVLNode<K, T> pivot) {
+                return rootNode;
             }
 
-            rightChild.Parent = rootNode.Parent;
-            rootNode.Parent = rightChild;
+            rootNode.RightSon = pivot.LeftSon;
 
-            rootNode.BalanceFactor = rootNode.BalanceFactor + 1 - Math.Min(rightChild.BalanceFactor, 0);
-            rightChild.BalanceFactor = rightChild.BalanceFactor + 1 + Math.Max(rootNode.BalanceFactor, 0);
+            if (pivot.LeftSon != null) {
+                pivot.LeftSon.Parent = rootNode;
+            }
 
-            return rightChild;
+            pivot.LeftSon = rootNode;
+
+            AVLNode<K, T>? oldParent = (AVLNode<K, T>?)rootNode.Parent;
+            pivot.Parent = oldParent;
+            rootNode.Parent = pivot;
+
+            if (oldParent != null) {
+                if (oldParent.LeftSon == rootNode) {
+                    oldParent.LeftSon = pivot;
+                } else {
+                    oldParent.RightSon = pivot;
+                }
+            } else {
+                Root = pivot;
+            }
+
+            if (pivot.BalanceFactor > 0) {
+                rootNode.BalanceFactor += 1 - pivot.BalanceFactor;
+                pivot.BalanceFactor += 1;
+            } else {
+                rootNode.BalanceFactor += 1;
+                pivot.BalanceFactor += 1;
+            }
+
+            return pivot;
+        }
+
+        private AVLNode<K, T> RotateRight(AVLNode<K, T> rootNode) {
+            if (rootNode.LeftSon is not AVLNode<K, T> pivot) {
+                return rootNode;
+            }
+
+            rootNode.LeftSon = pivot.RightSon;
+
+            if (pivot.RightSon != null) {
+                pivot.RightSon.Parent = rootNode;
+            }
+
+            pivot.RightSon = rootNode;
+
+            AVLNode<K, T>? oldParent = (AVLNode<K, T>?)rootNode.Parent;
+            pivot.Parent = oldParent;
+            rootNode.Parent = pivot;
+
+            if (oldParent != null) {
+                if (oldParent.LeftSon == rootNode) {
+                    oldParent.LeftSon = pivot;
+                } else {
+                    oldParent.RightSon = pivot;
+                }
+            } else {
+                Root = pivot;
+            }
+
+            if (pivot.BalanceFactor < 0) {
+                rootNode.BalanceFactor -= 1 + pivot.BalanceFactor;
+                pivot.BalanceFactor -= 1;
+            } else {
+                rootNode.BalanceFactor -= 1;
+                pivot.BalanceFactor -= 1;
+            }
+
+            return pivot;
         }
     }
 }

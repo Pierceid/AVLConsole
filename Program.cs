@@ -1,10 +1,11 @@
 ﻿using AVLConsole.Objects;
+using AVLConsole.Structures;
 using System.Diagnostics;
 
 namespace AVLConsole {
     internal class Program {
         private const int functionsCount = 1_000_000;
-        private const int insertCount = 1_000_000;
+        private const int insertCount = 10_000_000;
         private const int updateCount = 2_000_000;
         private const int deleteCount = 2_000_000;
         private const int pointFindCount = 5_000_000;
@@ -13,17 +14,16 @@ namespace AVLConsole {
         private const int maxCount = 2_000_000;
 
         static void Main(string[] args) {
-            //TesterBST tester = new();
-            TesterAVL tester = new();
+            Tester<AVL<Number, Number>> tester = new();
 
             // FUNCTIONS TEST
-            Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})");
+            //Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})");
 
             // INSERT TEST
-            //Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
+            Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
 
             // GET KEYS
-            //tester.GetKeys();
+            tester.GetKeys();
 
             // UPDATE TEST
             //Benchmark(() => tester.Update(updateCount), "===== UPDATE TEST =====", $"Update ({updateCount})");
@@ -35,7 +35,7 @@ namespace AVLConsole {
             //tester.GetKeys();
 
             // POINT FIND TEST
-            //Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
+            Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
 
             // INTERVAL FIND TEST
             //Benchmark(() => tester.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
