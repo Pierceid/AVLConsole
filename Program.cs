@@ -17,13 +17,13 @@ namespace AVLConsole {
             Tester<AVL<Number, Number>> tester = new();
 
             // FUNCTIONS TEST
-            //Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})");
+            Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})");
 
             // INSERT TEST
-            Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
+            //Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
 
             // GET KEYS
-            tester.GetKeys();
+            //tester.GetKeys();
 
             // UPDATE TEST
             //Benchmark(() => tester.Update(updateCount), "===== UPDATE TEST =====", $"Update ({updateCount})");
@@ -35,7 +35,7 @@ namespace AVLConsole {
             //tester.GetKeys();
 
             // POINT FIND TEST
-            Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
+            //Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
 
             // INTERVAL FIND TEST
             //Benchmark(() => tester.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");

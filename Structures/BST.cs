@@ -13,7 +13,7 @@ namespace AVLConsole.Structures {
 
         public virtual void Insert(K keys, T data) {
             if (Root == null) {
-                Root = new(keys, data);
+                Root = new BSTNode<K, T>(keys, data);
                 NodeCount++;
                 return;
             }
@@ -25,7 +25,7 @@ namespace AVLConsole.Structures {
 
                 if (cmp == -1) {
                     if (current.LeftSon == null) {
-                        current.LeftSon = new(keys, data) { Parent = current };
+                        current.LeftSon = new BSTNode<K, T>(keys, data) { Parent = current };
                         NodeCount++;
                         return;
                     }
@@ -33,7 +33,7 @@ namespace AVLConsole.Structures {
                     current = current.LeftSon;
                 } else if (cmp == 1) {
                     if (current.RightSon == null) {
-                        current.RightSon = new(keys, data) { Parent = current };
+                        current.RightSon = new BSTNode<K, T>(keys, data) { Parent = current };
                         NodeCount++;
                         return;
                     }
@@ -197,34 +197,46 @@ namespace AVLConsole.Structures {
             return matches;
         }
 
-        public virtual K? GetMinKey() {
-            if (Root == null) {
-                Console.WriteLine("Tree is empty");
-                return default;
+        public BSTNode<K, T>? GetMinNode(BSTNode<K, T>? node) {
+            if (node == null) return null;
+
+            while (node.LeftSon != null) {
+                node = node.LeftSon;
             }
 
-            BSTNode<K, T>? current = Root;
-
-            while (current.LeftSon != null) {
-                current = current.LeftSon;
-            }
-
-            return current.KeyData;
+            return node;
         }
 
-        public virtual K? GetMaxKey() {
-            if (Root == null) {
+        public BSTNode<K, T>? GetMaxNode(BSTNode<K, T>? node) {
+            if (node == null) return null;
+
+            while (node.RightSon != null) {
+                node = node.RightSon;
+            }
+
+            return node;
+        }
+
+        public K? GetMinKey() {
+            BSTNode<K, T>? minNode = GetMinNode(Root);
+
+            if (minNode == null) {
                 Console.WriteLine("Tree is empty");
                 return default;
             }
 
-            BSTNode<K, T>? current = Root;
+            return minNode.KeyData;
+        }
 
-            while (current.RightSon != null) {
-                current = current.RightSon;
+        public K? GetMaxKey() {
+            BSTNode<K, T>? maxNode = GetMaxNode(Root);
+
+            if (maxNode == null) {
+                Console.WriteLine("Tree is empty");
+                return default;
             }
 
-            return current.KeyData;
+            return maxNode.KeyData;
         }
 
         public void InOrderTraversal() {
