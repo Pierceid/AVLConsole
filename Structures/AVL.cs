@@ -1,4 +1,5 @@
-﻿using AVLConsole.Entities;
+﻿
+using AVLConsole.Entities;
 using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
@@ -48,25 +49,28 @@ namespace AVLConsole.Structures {
         }
 
         public override void Delete(K keys, T data) {
-            BSTNode<K, T>? nodeToDelete = PointFind(keys);
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return;
+            }
+
+            AVLNode<K, T>? nodeToDelete = (AVLNode<K, T>)PointFind(keys);
+            AVLNode<K, T>? parent = (AVLNode<K, T>?)nodeToDelete.Parent;
 
             if (nodeToDelete == null) return;
 
-            AVLNode<K, T> node = (AVLNode<K, T>)nodeToDelete;
-            AVLNode<K, T>? parent = (AVLNode<K, T>?)node.Parent;
-
-            if (node.LeftSon != null && node.RightSon != null) {
-                AVLNode<K, T>? successor = (AVLNode<K, T>?)base.GetMinNode((AVLNode<K, T>)node.RightSon);
+            if (nodeToDelete.LeftSon != null && nodeToDelete.RightSon != null) {
+                AVLNode<K, T>? successor = (AVLNode<K, T>?)base.GetMinNode(nodeToDelete.RightSon);
 
                 if (successor == null) return;
 
-                node.KeyData = successor.KeyData;
-                node.NodeData = successor.NodeData;
-                node = successor;
-                parent = (AVLNode<K, T>?)node.Parent;
+                nodeToDelete.KeyData = successor.KeyData;
+                nodeToDelete.NodeData = successor.NodeData;
+                nodeToDelete = successor;
+                parent = (AVLNode<K, T>?)nodeToDelete.Parent;
             }
 
-            AVLNode<K, T>? child = (AVLNode<K, T>?)(node.LeftSon ?? node.RightSon);
+            AVLNode<K, T>? child = (AVLNode<K, T>?)(nodeToDelete.LeftSon ?? nodeToDelete.RightSon);
 
             if (child != null) {
                 child.Parent = parent;
@@ -74,7 +78,7 @@ namespace AVLConsole.Structures {
 
             if (parent == null) {
                 Root = child;
-            } else if (parent.LeftSon == node) {
+            } else if (parent.LeftSon == nodeToDelete) {
                 parent.LeftSon = child;
                 parent.BalanceFactor++;
 

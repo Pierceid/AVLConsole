@@ -79,26 +79,17 @@ namespace AVLConsole.Structures {
                 return;
             }
 
-            BSTNode<K, T>? current = Root;
-            BSTNode<K, T>? parent = null;
+            BSTNode<K, T>? nodeToDelete = PointFind(keys);
+            BSTNode<K, T>? parent = nodeToDelete.Parent;
 
-            while (current != null) {
-                int cmp = keys.Compare(current.KeyData);
+            if (nodeToDelete == null) return;
 
-                if (cmp == 0) break;
-
-                parent = current;
-                current = (cmp == -1) ? current.LeftSon : current.RightSon;
-            }
-
-            if (current == null) return;
-
-            if (current.LeftSon == null || current.RightSon == null) {
-                BSTNode<K, T>? child = current.LeftSon ?? current.RightSon;
+            if (nodeToDelete.LeftSon == null || nodeToDelete.RightSon == null) {
+                BSTNode<K, T>? child = nodeToDelete.LeftSon ?? nodeToDelete.RightSon;
 
                 if (parent == null) {
                     Root = child;
-                } else if (parent.LeftSon == current) {
+                } else if (parent.LeftSon == nodeToDelete) {
                     parent.LeftSon = child;
                 } else {
                     parent.RightSon = child;
@@ -113,16 +104,16 @@ namespace AVLConsole.Structures {
                 return;
             }
 
-            BSTNode<K, T>? predParent = current;
-            BSTNode<K, T>? pred = current.LeftSon;
+            BSTNode<K, T>? predParent = nodeToDelete;
+            BSTNode<K, T>? pred = nodeToDelete.LeftSon;
 
             while (pred.RightSon != null) {
                 predParent = pred;
                 pred = pred.RightSon;
             }
 
-            current.KeyData = pred.KeyData;
-            current.NodeData = pred.NodeData;
+            nodeToDelete.KeyData = pred.KeyData;
+            nodeToDelete.NodeData = pred.NodeData;
 
             BSTNode<K, T>? predChild = pred.LeftSon;
 
