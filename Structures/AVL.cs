@@ -12,13 +12,15 @@ namespace AVLConsole.Structures {
             }
 
             AVLNode<K, T> current = (AVLNode<K, T>)Root;
+            AVLNode<K, T>? newNode = new AVLNode<K, T>(keys, data);
 
             while (true) {
                 int cmp = keys.Compare(current.KeyData);
 
                 if (cmp == -1) {
                     if (current.LeftSon == null) {
-                        current.LeftSon = new AVLNode<K, T>(keys, data) { Parent = current };
+                        newNode.Parent = current;
+                        current.LeftSon = newNode;
                         NodeCount++;
                         break;
                     }
@@ -26,7 +28,8 @@ namespace AVLConsole.Structures {
                     current = (AVLNode<K, T>)current.LeftSon;
                 } else if (cmp == 1) {
                     if (current.RightSon == null) {
-                        current.RightSon = new AVLNode<K, T>(keys, data) { Parent = current };
+                        newNode.Parent = current;
+                        current.RightSon = newNode;
                         NodeCount++;
                         break;
                     }
@@ -37,7 +40,7 @@ namespace AVLConsole.Structures {
                 }
             }
 
-            RebalanceAfterInsert(current);
+            RebalanceAfterInsert(newNode);
 
             while (Root.Parent != null) {
                 Root = (AVLNode<K, T>)Root.Parent;
@@ -74,7 +77,7 @@ namespace AVLConsole.Structures {
                 }
 
                 rebalanceStart = parent;
-                
+
                 NodeCount--;
             } else {
                 AVLNode<K, T>? predParent = nodeToDelete;
@@ -229,8 +232,8 @@ namespace AVLConsole.Structures {
                 Root = pivot;
             }
 
-            rootNode.BalanceFactor = rootNode.BalanceFactor - pivot.BalanceFactor - 1;
-            pivot.BalanceFactor = pivot.BalanceFactor + rootNode.BalanceFactor - 1;
+            rootNode.BalanceFactor = rootNode.BalanceFactor - 1 - Math.Max(pivot.BalanceFactor, 0);
+            pivot.BalanceFactor = pivot.BalanceFactor - 1 + Math.Min(rootNode.BalanceFactor, 0);
 
             return pivot;
         }
@@ -260,8 +263,8 @@ namespace AVLConsole.Structures {
                 Root = pivot;
             }
 
-            rootNode.BalanceFactor = rootNode.BalanceFactor - pivot.BalanceFactor + 1;
-            pivot.BalanceFactor = pivot.BalanceFactor + rootNode.BalanceFactor + 1;
+            rootNode.BalanceFactor = rootNode.BalanceFactor + 1 - Math.Min(pivot.BalanceFactor, 0);
+            pivot.BalanceFactor = pivot.BalanceFactor + 1 + Math.Max(rootNode.BalanceFactor, 0);
 
             return pivot;
         }
