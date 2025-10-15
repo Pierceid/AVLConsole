@@ -5,14 +5,15 @@ using AVLConsole.Objects;
 namespace AVLConsole.Structures {
     public class AVL<K, T> : BST<K, T> where K : IKey<K> where T : Item {
         public override void Insert(K keys, T data) {
+            AVLNode<K, T> newNode = new(keys, data);
+
             if (Root == null) {
-                Root = new AVLNode<K, T>(keys, data);
+                Root = newNode;
                 NodeCount++;
                 return;
             }
-
+            
             AVLNode<K, T> current = (AVLNode<K, T>)Root;
-            AVLNode<K, T>? newNode = new AVLNode<K, T>(keys, data);
 
             while (true) {
                 int cmp = keys.Compare(current.KeyData);
