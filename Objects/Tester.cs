@@ -220,6 +220,10 @@ namespace AVLConsole.Objects {
         public void LevelOrderTraversal() {
             int count = 0;
             Traversal<Number, Number>.LevelOrderTraversal(tree, node => count++);
+            //Traversal<Number, Number>.LevelOrderTraversal(tree, node => {
+            //    Console.WriteLine($"{node.NodeData} - {((AVLNode<Number, Number>)node).BalanceFactor}");
+            //    count++;
+            //});
             Console.WriteLine($"Node Count: {tree.NodeCount}, Real Count: {count}");
             Console.WriteLine();
         }

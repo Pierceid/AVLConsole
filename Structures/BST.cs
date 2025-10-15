@@ -12,8 +12,10 @@ namespace AVLConsole.Structures {
         }
 
         public virtual void Insert(K keys, T data) {
+            BSTNode<K, T> nodeToInsert = new(keys, data);
+
             if (Root == null) {
-                Root = new BSTNode<K, T>(keys, data);
+                Root = nodeToInsert;
                 NodeCount++;
                 return;
             }
@@ -25,7 +27,8 @@ namespace AVLConsole.Structures {
 
                 if (cmp == -1) {
                     if (current.LeftSon == null) {
-                        current.LeftSon = new BSTNode<K, T>(keys, data) { Parent = current };
+                        nodeToInsert.Parent = current;
+                        current.LeftSon = nodeToInsert;
                         NodeCount++;
                         return;
                     }
@@ -33,7 +36,8 @@ namespace AVLConsole.Structures {
                     current = current.LeftSon;
                 } else if (cmp == 1) {
                     if (current.RightSon == null) {
-                        current.RightSon = new BSTNode<K, T>(keys, data) { Parent = current };
+                        nodeToInsert.Parent = current;
+                        current.RightSon = nodeToInsert;
                         NodeCount++;
                         return;
                     }

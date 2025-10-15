@@ -1,14 +1,13 @@
-﻿
-using AVLConsole.Entities;
+﻿using AVLConsole.Entities;
 using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
     public class AVL<K, T> : BST<K, T> where K : IKey<K> where T : Item {
         public override void Insert(K keys, T data) {
-            AVLNode<K, T> newNode = new(keys, data);
+            AVLNode<K, T> nodeToInsert = new(keys, data);
 
             if (Root == null) {
-                Root = newNode;
+                Root = nodeToInsert;
                 NodeCount++;
                 return;
             }
@@ -20,8 +19,8 @@ namespace AVLConsole.Structures {
 
                 if (cmp == -1) {
                     if (current.LeftSon == null) {
-                        newNode.Parent = current;
-                        current.LeftSon = newNode;
+                        nodeToInsert.Parent = current;
+                        current.LeftSon = nodeToInsert;
                         NodeCount++;
                         break;
                     }
@@ -29,8 +28,8 @@ namespace AVLConsole.Structures {
                     current = (AVLNode<K, T>)current.LeftSon;
                 } else if (cmp == 1) {
                     if (current.RightSon == null) {
-                        newNode.Parent = current;
-                        current.RightSon = newNode;
+                        nodeToInsert.Parent = current;
+                        current.RightSon = nodeToInsert;
                         NodeCount++;
                         break;
                     }
@@ -41,7 +40,7 @@ namespace AVLConsole.Structures {
                 }
             }
 
-            RebalanceAfterInsert(newNode);
+            RebalanceAfterInsert(nodeToInsert);
 
             while (Root.Parent != null) {
                 Root = (AVLNode<K, T>)Root.Parent;
@@ -77,7 +76,7 @@ namespace AVLConsole.Structures {
                     child.Parent = parent;
                 }
 
-                rebalanceStart = parent;
+                rebalanceStart = child;
 
                 NodeCount--;
             } else {
@@ -106,7 +105,7 @@ namespace AVLConsole.Structures {
                     predChild.Parent = predParent;
                 }
 
-                rebalanceStart = predParent;
+                rebalanceStart = pred;
 
                 NodeCount--;
             }
@@ -170,9 +169,9 @@ namespace AVLConsole.Structures {
         }
 
         private void RebalanceAfterDelete(AVLNode<K, T> node) {
-            AVLNode<K, T>? current = node;
+            AVLNode<K, T> current = node;
 
-            while (current?.Parent is AVLNode<K, T> parent) {
+            while (current.Parent is AVLNode<K, T> parent) {
                 if (parent.LeftSon == current) {
                     parent.BalanceFactor++;
                 } else {
