@@ -5,9 +5,9 @@ using System.Diagnostics;
 namespace AVLConsole {
     internal class Program {
         private const int functionsCount = 1_000_000;
-        private const int insertCount = 10_000_000;
+        private const int insertCount = 1_000_000;
         private const int updateCount = 2_000_000;
-        private const int deleteCount = 2_000_000;
+        private const int deleteCount = 1_000_000;
         private const int pointFindCount = 5_000_000;
         private const int intervalFindCount = 1_000_000;
         private const int minCount = 2_000_000;

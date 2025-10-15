@@ -49,48 +49,71 @@ namespace AVLConsole.Structures {
         }
 
         public override void Delete(K keys, T data) {
-            if (Root == null) {
-                Console.WriteLine("Tree is empty");
-                return;
-            }
+            if (Root == null) return;
 
-            AVLNode<K, T>? nodeToDelete = (AVLNode<K, T>)PointFind(keys);
-            AVLNode<K, T>? parent = (AVLNode<K, T>?)nodeToDelete.Parent;
+            AVLNode<K, T>? nodeToDelete = (AVLNode<K, T>?)PointFind(keys);
 
             if (nodeToDelete == null) return;
 
-            if (nodeToDelete.LeftSon != null && nodeToDelete.RightSon != null) {
-                AVLNode<K, T>? successor = (AVLNode<K, T>?)base.GetMinNode(nodeToDelete.RightSon);
+            AVLNode<K, T>? parent = (AVLNode<K, T>?)nodeToDelete.Parent;
+            AVLNode<K, T>? rebalanceStart = null;
 
-                if (successor == null) return;
+            if (nodeToDelete.LeftSon == null || nodeToDelete.RightSon == null) {
+                AVLNode<K, T>? child = (AVLNode<K, T>?)(nodeToDelete.LeftSon ?? nodeToDelete.RightSon);
 
-                nodeToDelete.KeyData = successor.KeyData;
-                nodeToDelete.NodeData = successor.NodeData;
-                nodeToDelete = successor;
-                parent = (AVLNode<K, T>?)nodeToDelete.Parent;
-            }
+                if (parent == null) {
+                    Root = child;
+                } else if (parent.LeftSon == nodeToDelete) {
+                    parent.LeftSon = child;
+                } else {
+                    parent.RightSon = child;
+                }
 
-            AVLNode<K, T>? child = (AVLNode<K, T>?)(nodeToDelete.LeftSon ?? nodeToDelete.RightSon);
+                if (child != null) {
+                    child.Parent = parent;
+                }
 
-            if (child != null) {
-                child.Parent = parent;
-            }
-
-            if (parent == null) {
-                Root = child;
-            } else if (parent.LeftSon == nodeToDelete) {
-                parent.LeftSon = child;
-                parent.BalanceFactor++;
-
-                RebalanceAfterDelete(parent);
+                rebalanceStart = parent;
+                
+                NodeCount--;
             } else {
-                parent.RightSon = child;
-                parent.BalanceFactor--;
+                AVLNode<K, T>? predParent = nodeToDelete;
+                AVLNode<K, T> pred = (AVLNode<K, T>)nodeToDelete.LeftSon;
 
-                RebalanceAfterDelete(parent);
+                while (pred.RightSon != null) {
+                    predParent = pred;
+                    pred = (AVLNode<K, T>)pred.RightSon;
+                }
+
+                nodeToDelete.KeyData = pred.KeyData;
+                nodeToDelete.NodeData = pred.NodeData;
+
+                AVLNode<K, T>? predChild = (AVLNode<K, T>?)pred.LeftSon;
+
+                if (predParent == nodeToDelete) {
+                    predParent.LeftSon = predChild;
+                } else if (predParent.LeftSon == pred) {
+                    predParent.LeftSon = predChild;
+                } else {
+                    predParent.RightSon = predChild;
+                }
+
+                if (predChild != null) {
+                    predChild.Parent = predParent;
+                }
+
+                rebalanceStart = predParent;
+
+                NodeCount--;
             }
 
-            NodeCount--;
+            if (rebalanceStart != null) {
+                RebalanceAfterDelete(rebalanceStart);
+            }
+
+            while (Root?.Parent != null) {
+                Root = (AVLNode<K, T>)Root.Parent!;
+            }
         }
 
         public override BSTNode<K, T> PointFind(K keys) {
@@ -206,8 +229,8 @@ namespace AVLConsole.Structures {
                 Root = pivot;
             }
 
-            rootNode.BalanceFactor = rootNode.BalanceFactor - 1 - Math.Max(pivot.BalanceFactor, 0);
-            pivot.BalanceFactor = pivot.BalanceFactor - 1 + Math.Min(rootNode.BalanceFactor, 0);
+            rootNode.BalanceFactor = rootNode.BalanceFactor - pivot.BalanceFactor - 1;
+            pivot.BalanceFactor = pivot.BalanceFactor + rootNode.BalanceFactor - 1;
 
             return pivot;
         }
@@ -237,8 +260,8 @@ namespace AVLConsole.Structures {
                 Root = pivot;
             }
 
-            rootNode.BalanceFactor = rootNode.BalanceFactor + 1 - Math.Min(pivot.BalanceFactor, 0);
-            pivot.BalanceFactor = pivot.BalanceFactor + 1 + Math.Max(rootNode.BalanceFactor, 0);
+            rootNode.BalanceFactor = rootNode.BalanceFactor - pivot.BalanceFactor + 1;
+            pivot.BalanceFactor = pivot.BalanceFactor + rootNode.BalanceFactor + 1;
 
             return pivot;
         }
