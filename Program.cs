@@ -19,39 +19,39 @@ namespace AVLConsole {
             //C5Tester tester = new();
 
             // FUNCTIONS TEST
-            Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})");
+            //Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})", functionsCount);
 
             // INSERT TEST
-            Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})");
+            Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})", insertCount);
 
             // GET KEYS
             tester.GetKeys();
 
             // UPDATE TEST
-            //Benchmark(() => tester.Update(updateCount), "===== UPDATE TEST =====", $"Update ({updateCount})");
+            //Benchmark(() => tester.Update(updateCount), "===== UPDATE TEST =====", $"Update ({updateCount})", updateCount);
 
             //// DELETE TEST
-            Benchmark(() => tester.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})");
+            Benchmark(() => tester.Delete(deleteCount), "===== DELETE TEST =====", $"Delete ({deleteCount})", deleteCount);
 
             //// GET KEYS
             tester.GetKeys();
 
             //// POINT FIND TEST
-            Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})");
+            Benchmark(() => tester.PointFind(pointFindCount), "===== POINT FIND TEST =====", $"Point find ({pointFindCount})", pointFindCount);
 
             //// INTERVAL FIND TEST
-            Benchmark(() => tester.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})");
+            Benchmark(() => tester.IntervalFind(intervalFindCount), "===== INTERVAL FIND TEST =====", $"Interval find ({intervalFindCount})", intervalFindCount);
 
             //// MIN TEST
-            Benchmark(() => tester.GetMinKey(minCount), "===== MIN TEST =====", $"Find min ({minCount})");
+            Benchmark(() => tester.GetMinKey(minCount), "===== MIN TEST =====", $"Find min ({minCount})", minCount);
 
             //// MAX TEST
-            Benchmark(() => tester.GetMaxKey(maxCount), "===== MAX TEST =====", $"Find max ({maxCount})");
+            Benchmark(() => tester.GetMaxKey(maxCount), "===== MAX TEST =====", $"Find max ({maxCount})", maxCount);
 
-            tester.LevelOrderTraversal();
+            //tester.LevelOrderTraversal();
         }
 
-        static void Benchmark(Action action, string title, string description) {
+        static void Benchmark(Action action, string title, string description, int count) {
             Console.WriteLine(title);
 
             Stopwatch stopwatch = new();
@@ -60,6 +60,7 @@ namespace AVLConsole {
             stopwatch.Stop();
 
             Console.WriteLine($"{description}: {stopwatch.Elapsed.TotalSeconds:F2} s");
+            Console.WriteLine($"1 operation: {(stopwatch.Elapsed.TotalMicroseconds / count):F2} us");
             Console.WriteLine();
         }
     }

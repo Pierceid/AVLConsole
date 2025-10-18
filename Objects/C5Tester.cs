@@ -104,6 +104,28 @@ namespace AVLConsole.Objects {
             }
         }
 
+        public void GetMinKey(int count) {
+            for (int i = 0; i < count; i++) {
+                var foundMin = tree.FindMin().Value;
+                var actualMin = keys[0];
+
+                if (foundMin != actualMin) {
+                    throw new InvalidDataException($"Found min doesnt match actual min: ({foundMin}) - ({actualMin})");
+                }
+            }
+        }
+
+        public void GetMaxKey(int count) {
+            for (int i = 0; i < count; i++) {
+                var foundMax = tree.FindMax().Value;
+                var actualMax = keys[^1];
+
+                if (foundMax != actualMax) {
+                    throw new InvalidDataException($"Found max doesnt match actual max: ({foundMax}) - ({actualMax})");
+                }
+            }
+        }
+
         public void GetKeys() {
             keys = tree.Keys?.ToList() ?? new();
             keys.Sort((a, b) => a.Value.CompareTo(b.Value));
