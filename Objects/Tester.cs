@@ -53,7 +53,7 @@ namespace AVLConsole.Objects {
                         var match = tree.PointFind(key);
 
                         if (match != null) {
-                            throw new InvalidDataException($"Found matches found for deleted keys: ({key})");
+                            throw new InvalidDataException($"Found match for deleted keys: ({key})");
                         }
                     } catch (KeyNotFoundException) { }
 
@@ -122,6 +122,15 @@ namespace AVLConsole.Objects {
                 int newValue = random.Next();
                 Number newKey = new() { Value = newValue };
                 Number newData = newKey;
+
+                try {
+                    var match = tree.PointFind(newKey);
+
+                    if (match != null) {
+                        i--;
+                        continue;
+                    }
+                } catch (KeyNotFoundException) { }
 
                 tree.Update(oldKey, oldData, newKey, newData);
 

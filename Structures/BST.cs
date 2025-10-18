@@ -55,25 +55,17 @@ namespace AVLConsole.Structures {
                 return;
             }
 
-            BSTNode<K, T>? current = Root;
+            BSTNode<K, T>? nodeToUpdate = PointFind(oldKeys);
 
-            while (current != null) {
-                int cmp = oldKeys.Compare(current.KeyData);
+            if (nodeToUpdate == null) return;
 
-                if (cmp == 0) break;
+            bool keysChanged = oldKeys.Compare(newKeys) != 0;
 
-                current = (cmp == -1) ? current.LeftSon : current.RightSon;
-            }
-
-            if (current == null) return;
-
-            bool keysChanged = !oldKeys.Equals(newKeys);
-
-            if (!keysChanged) {
-                current.NodeData = newData;
-            } else {
+            if (keysChanged) {
                 Delete(oldKeys, oldData);
                 Insert(newKeys, newData);
+            } else {
+                nodeToUpdate.NodeData = newData;
             }
         }
 
