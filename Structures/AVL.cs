@@ -41,10 +41,6 @@ namespace AVLConsole.Structures {
             }
 
             RebalanceAfterInsert(nodeToInsert);
-
-            while (Root.Parent != null) {
-                Root = (AVLNode<K, T>)Root.Parent;
-            }
         }
 
         public override void Update(K oldKeys, T oldData, K newKeys, T newData) {
@@ -121,10 +117,6 @@ namespace AVLConsole.Structures {
 
             if (rebalanceStart != null) {
                 RebalanceAfterDelete(rebalanceStart, deletedFromLeft);
-            }
-
-            while (Root?.Parent != null) {
-                Root = (AVLNode<K, T>)Root.Parent!;
             }
         }
 
@@ -227,10 +219,6 @@ namespace AVLConsole.Structures {
                 } else {
                     break;
                 }
-            }
-
-            while (Root?.Parent != null) {
-                Root = (AVLNode<K, T>)Root.Parent!;
             }
         }
 
