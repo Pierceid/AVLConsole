@@ -27,6 +27,10 @@ namespace AVLConsole.Objects {
                     try {
                         tree.Insert(key, key);
 
+                        if (tree is AVL<Number, Number>) {
+                            CheckTreeBalance();
+                        }
+
                         keys.Add(key);
 
                         insertCount++;
@@ -44,6 +48,10 @@ namespace AVLConsole.Objects {
                     Number key = keys[idx];
 
                     tree.Delete(key, key);
+
+                    if (tree is AVL<Number, Number>) {
+                        CheckTreeBalance();
+                    }
 
                     int lastIndex = keys.Count - 1;
                     keys[idx] = keys[lastIndex];
@@ -260,6 +268,82 @@ namespace AVLConsole.Objects {
         public void Clear() {
             tree = new();
             keys.Clear();
+        }
+
+        private int GetHeight(BSTNode<Number, Number>? root) {
+            if (root == null) return 0;
+
+            Stack<BSTNode<Number, Number>> stack = new();
+            Dictionary<BSTNode<Number, Number>, int> heightMap = new();
+
+            stack.Push(root);
+
+            while (stack.Count > 0) {
+                BSTNode<Number, Number> node = stack.Peek();
+
+                bool leftDone = node.LeftSon == null || heightMap.ContainsKey(node.LeftSon);
+                bool rightDone = node.RightSon == null || heightMap.ContainsKey(node.RightSon);
+
+                if (leftDone && rightDone) {
+                    stack.Pop();
+                    int leftHeight = node.LeftSon != null ? heightMap[node.LeftSon] : 0;
+                    int rightHeight = node.RightSon != null ? heightMap[node.RightSon] : 0;
+                    heightMap[node] = Math.Max(leftHeight, rightHeight) + 1;
+                } else {
+                    if (node.RightSon != null && !heightMap.ContainsKey(node.RightSon)) {
+                        stack.Push(node.RightSon);
+                    }
+
+                    if (node.LeftSon != null && !heightMap.ContainsKey(node.LeftSon)) {
+                        stack.Push(node.LeftSon);
+                    }
+                }
+            }
+
+            return heightMap[root];
+        }
+
+        private void CheckTreeBalance() {
+            if (tree.Root == null) return;
+
+            bool valid = ValidateBalance(tree.Root);
+
+            if (!valid) {
+                throw new InvalidDataException("AVL balance validation failed!");
+            }
+        }
+
+        private bool ValidateBalance(BSTNode<Number, Number>? root) {
+            if (root == null) return true;
+
+            Stack<BSTNode<Number, Number>> stack = new();
+            stack.Push(root);
+
+            while (stack.Count > 0) {
+                var node = stack.Pop();
+
+                int leftHeight = GetHeight(node.LeftSon);
+                int rightHeight = GetHeight(node.RightSon);
+                int expectedBF = rightHeight - leftHeight;
+
+                if (node is AVLNode<Number, Number> avlNode) {
+                    if (avlNode.BalanceFactor != expectedBF) {
+                        Console.WriteLine($"BF mismatch at node {avlNode.KeyData.Value}: Expected {expectedBF}, Found {avlNode.BalanceFactor}");
+                        return false;
+                    }
+
+                    if (Math.Abs(avlNode.BalanceFactor) > 1) {
+                        Console.WriteLine($"Invalid BF at node {avlNode.KeyData.Value}: {avlNode.BalanceFactor}");
+                        return false;
+                    }
+                }
+
+                if (node.LeftSon != null) stack.Push(node.LeftSon);
+
+                if (node.RightSon != null) stack.Push(node.RightSon);
+            }
+
+            return true;
         }
     }
 }

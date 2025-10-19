@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 namespace AVLConsole {
     internal class Program {
-        private const int functionsCount = 1_000_000;
+        private const int functionsCount = 10_000;
         private const int insertCount = 10_000_000;
         private const int updateCount = 2_000_000;
         private const int deleteCount = 2_000_000;
