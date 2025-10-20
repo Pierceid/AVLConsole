@@ -146,39 +146,61 @@ namespace AVLConsole.Structures {
 
         public virtual List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
             List<BSTNode<K, T>> matches = new();
-            Stack<BSTNode<K, T>> stack = new();
+
+            if (Root == null) {
+                throw new KeyNotFoundException("Tree is empty.");
+            }
+
             BSTNode<K, T>? current = Root;
+            BSTNode<K, T>? start = null;
 
-            while (stack.Count > 0 || current != null) {
-                while (current != null) {
-                    int cmpLower = current.KeyData.Compare(lower);
+            while (current != null) {
+                int cmp = current.KeyData.Compare(lower);
 
-                    if (cmpLower == -1) {
-                        current = current.RightSon;
-                    } else {
-                        stack.Push(current);
-                        current = current.LeftSon;
-                    }
+                if (cmp >= 0) {
+                    start = current;
+                    current = current.LeftSon;
+                } else {
+                    current = current.RightSon;
                 }
+            }
 
-                if (stack.Count == 0) break;
+            if (start == null) {
+                throw new KeyNotFoundException($"No nodes found for lower bound {lower.GetKeys()}");
+            }
 
-                current = stack.Pop();
+            current = start;
 
-                int cmpLowerBound = current.KeyData.Compare(lower);
-                int cmpUpperBound = current.KeyData.Compare(upper);
+            while (current != null) {
+                int cmpLower = current.KeyData.Compare(lower);
+                int cmpUpper = current.KeyData.Compare(upper);
 
-                if (cmpLowerBound >= 0 && cmpUpperBound <= 0) {
+                if (cmpLower >= 0 && cmpUpper <= 0) {
                     matches.Add(current);
                 }
 
-                if (cmpUpperBound == 1) break;
+                if (cmpUpper > 0) break;
 
-                current = current.RightSon;
+                if (current.RightSon != null) {
+                    current = current.RightSon;
+
+                    while (current.LeftSon != null) {
+                        current = current.LeftSon;
+                    }
+                } else {
+                    BSTNode<K, T>? parent = current.Parent;
+
+                    while (parent != null && current == parent.RightSon) {
+                        current = parent;
+                        parent = parent.Parent;
+                    }
+
+                    current = parent;
+                }
             }
 
             if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()} , {upper.GetKeys()})");
+                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()}, {upper.GetKeys()})");
             }
 
             return matches;
