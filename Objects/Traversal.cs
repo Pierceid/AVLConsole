@@ -2,7 +2,7 @@
 using AVLConsole.Structures;
 
 namespace AVLConsole.Objects {
-    public class Traversal<K, T> where K : IKey<K> where T : Item {
+    public class Traversal<K, T> where K : IKey<K>, new() where T : Item, new() {
         public static void InOrderTraversal(BST<K, T> tree, Action<BSTNode<K, T>>? action) {
             Console.WriteLine("=== In Order Traversal ===");
 

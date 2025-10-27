@@ -9,6 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="C5" Version="3.0.0" />
+    <PackageReference Include="Extended.Wpf.Toolkit" Version="5.0.0" />
   </ItemGroup>
 
 </Project>

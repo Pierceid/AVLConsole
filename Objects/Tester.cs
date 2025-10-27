@@ -1,4 +1,5 @@
-﻿using AVLConsole.Structures;
+﻿using AVLConsole.Entities;
+using AVLConsole.Structures;
 
 namespace AVLConsole.Objects {
     public class Tester<Tree> where Tree : BST<Number, Number>, new() {
@@ -99,9 +100,9 @@ namespace AVLConsole.Objects {
             GetKeys();
         }
 
-        public void Insert(int count) {
+        public void Insert(int count, bool rng) {
             for (int i = 0; i < count; i++) {
-                int value = random.Next();
+                int value = rng ? random.Next() : i;
                 Number key = new() { Value = value };
 
                 try {

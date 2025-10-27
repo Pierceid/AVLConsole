@@ -32,19 +32,5 @@
             string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             return new string(Enumerable.Repeat(chars, length).Select(s => s[random.Next(s.Length)]).ToArray());
         }
-
-        public static GPS GenerateRandomGPS(int maxLatitude, int maxLongitude) {
-            double latitudeValue = Math.Round(random.NextDouble() * maxLatitude, 0);
-            string latitudeDirection = random.NextDouble() < 0.5 ? "N" : "S";
-            double longitudeValue = Math.Round(random.NextDouble() * maxLongitude, 0);
-            string longitudeDirection = random.NextDouble() < 0.5 ? "E" : "W";
-            return new GPS(latitudeValue, latitudeDirection, longitudeValue, longitudeDirection);
-        }
-
-        public static GPS ParseGPS(string latitudeValue, string latitudeDirection, string longitudeValue, string longitudeDirection) {
-            double parsedLatitudeValue = double.TryParse(latitudeValue, out double latParsed) ? latParsed : double.MaxValue;
-            double parsedLongitudeValue = double.TryParse(longitudeValue, out double lonParsed) ? lonParsed : double.MaxValue;
-            return new GPS(parsedLatitudeValue, latitudeDirection, parsedLongitudeValue, longitudeDirection);
-        }
     }
 }

@@ -1,4 +1,5 @@
-﻿using AVLConsole.Objects;
+﻿using AVLConsole.Entities;
+using AVLConsole.Objects;
 using AVLConsole.Structures;
 using System.Diagnostics;
 
@@ -22,7 +23,10 @@ namespace AVLConsole {
             //Benchmark(() => tester.TestFunctions(functionsCount), "===== FUNCTIONS TEST =====", $"Functions ({functionsCount})", functionsCount);
 
             // INSERT TEST
-            Benchmark(() => tester.Insert(insertCount), "===== INSERT TEST =====", $"Insert ({insertCount})", insertCount);
+            Benchmark(() => tester.Insert(insertCount, true), "===== INSERT TEST (random) =====", $"Insert ({insertCount})", insertCount);
+
+            // INSERT TEST
+            //Benchmark(() => tester.Insert(insertCount, false), "===== INSERT TEST (in order) =====", $"Insert ({insertCount})", insertCount);
 
             // GET KEYS
             tester.GetKeys();

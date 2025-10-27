@@ -1,8 +1,7 @@
 ﻿using AVLConsole.Entities;
-using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
-    public class AVL<K, T> : BST<K, T> where K : IKey<K> where T : Item {
+    public class AVL<K, T> : BST<K, T> where K : IKey<K>, new() where T : Item, new() {
         public override void Insert(K keys, T data) {
             AVLNode<K, T> nodeToInsert = new(keys, data);
 
@@ -36,7 +35,7 @@ namespace AVLConsole.Structures {
 
                     current = (AVLNode<K, T>)current.RightSon;
                 } else {
-                    throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.GetKeys()})");
+                    throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.ExportKeys()})");
                 }
             }
 
@@ -62,7 +61,7 @@ namespace AVLConsole.Structures {
                 AVLNode<K, T>? parent = (AVLNode<K, T>?)nodeToDelete.Parent;
 
                 if (parent != null) {
-                    deletedFromLeft = (parent.LeftSon == nodeToDelete);
+                    deletedFromLeft = parent.LeftSon == nodeToDelete;
                     rebalanceStart = parent;
                 }
 
@@ -99,7 +98,7 @@ namespace AVLConsole.Structures {
 
                 AVLNode<K, T>? predChild = (AVLNode<K, T>?)pred.LeftSon;
 
-                deletedFromLeft = (predParent.LeftSon == pred);
+                deletedFromLeft = predParent.LeftSon == pred;
                 rebalanceStart = predParent;
 
                 if (predParent.LeftSon == pred) {
@@ -184,7 +183,7 @@ namespace AVLConsole.Structures {
 
                 if (current.BalanceFactor == 0) {
                     AVLNode<K, T>? parent = (AVLNode<K, T>?)current.Parent;
-                    fromLeft = (parent?.LeftSon == current);
+                    fromLeft = parent?.LeftSon == current;
                     current = parent;
                     continue;
                 }
@@ -213,7 +212,7 @@ namespace AVLConsole.Structures {
 
                 if (current.BalanceFactor == 0) {
                     AVLNode<K, T>? parent = (AVLNode<K, T>?)current.Parent;
-                    fromLeft = (parent?.LeftSon == current);
+                    fromLeft = parent?.LeftSon == current;
                     current = parent;
                     continue;
                 } else {

@@ -1,4 +1,5 @@
-﻿using C5;
+﻿using AVLConsole.Entities;
+using C5;
 
 namespace AVLConsole.Objects {
     public class C5Number() : Number, IComparable<Number> {
@@ -18,9 +19,9 @@ namespace AVLConsole.Objects {
             random = new();
         }
 
-        public void Insert(int count) {
+        public void Insert(int count, bool rng) {
             for (int i = 0; i < count; i++) {
-                int value = random.Next();
+                int value = rng ? random.Next() : i;
                 C5Number key = new() { Value = value };
 
                 try {
@@ -66,7 +67,7 @@ namespace AVLConsole.Objects {
                 C5Number key = keys[random.Next(keys.Count)];
 
                 if (!tree.Contains(key)) {
-                    throw new KeyNotFoundException($"No matches found for keys: ({key.GetKeys()})");
+                    throw new KeyNotFoundException($"No matches found for keys: ({key.ExportKeys()})");
                 }
 
                 int step = Math.Max(1, count / 10);

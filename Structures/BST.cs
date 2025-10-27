@@ -2,7 +2,7 @@
 using AVLConsole.Objects;
 
 namespace AVLConsole.Structures {
-    public class BST<K, T> where K : IKey<K> where T : Item {
+    public class BST<K, T> where K : IKey<K>, new() where T : Item, new() {
         public BSTNode<K, T>? Root { get; set; }
         public int NodeCount { get; set; }
 
@@ -44,7 +44,7 @@ namespace AVLConsole.Structures {
 
                     current = current.RightSon;
                 } else {
-                    throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.GetKeys()})");
+                    throw new InvalidOperationException($"Duplicate key insertion attempted: ({keys.ExportKeys()})");
                 }
             }
         }
@@ -141,14 +141,15 @@ namespace AVLConsole.Structures {
                 }
             }
 
-            throw new KeyNotFoundException($"No matches found for keys: ({keys.GetKeys()})");
+            throw new KeyNotFoundException($"No matches found for keys: ({keys.ExportKeys()})");
         }
 
         public virtual List<BSTNode<K, T>> IntervalFind(K lower, K upper) {
             List<BSTNode<K, T>> matches = new();
 
             if (Root == null) {
-                throw new KeyNotFoundException("Tree is empty.");
+                Console.WriteLine("Tree is empty");
+                return matches;
             }
 
             BSTNode<K, T>? current = Root;
@@ -166,7 +167,8 @@ namespace AVLConsole.Structures {
             }
 
             if (start == null) {
-                throw new KeyNotFoundException($"No nodes found for lower bound {lower.GetKeys()}");
+                Console.WriteLine($"No nodes found for lower bound {lower.ExportKeys()}");
+                return matches;
             }
 
             current = start;
@@ -200,7 +202,7 @@ namespace AVLConsole.Structures {
             }
 
             if (matches.Count == 0) {
-                throw new KeyNotFoundException($"No matches found for interval: ({lower.GetKeys()}, {upper.GetKeys()})");
+                Console.WriteLine($"No matches found for interval: ({lower.ExportKeys()}, {upper.ExportKeys()})");
             }
 
             return matches;
@@ -250,18 +252,73 @@ namespace AVLConsole.Structures {
 
         public void InOrderTraversal() {
             int index = 0;
+            string result = "";
             Traversal<K, T>.InOrderTraversal(this, node => {
-                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
+                result += $"{++index}. {node.KeyData.ExportKeys()} - {node.NodeData.ExportItem()}";
             });
-            Console.WriteLine($"\nNode Count: {NodeCount}, Real Count: {index}\n");
+            Console.WriteLine($"\n{result}\nNode Count: {NodeCount}, Real Count: {index}\n");
         }
 
         public void LevelOrderTraversal() {
             int index = 0;
+            string result = "";
             Traversal<K, T>.LevelOrderTraversal(this, node => {
-                Console.WriteLine($"{++index}. {node.KeyData.GetKeys()} - {node.NodeData.GetInfo()}");
+                result += $"{++index}. {node.KeyData.ExportKeys()} - {node.NodeData.ExportItem()}";
             });
-            Console.WriteLine($"\nNode Count: {NodeCount}, Real Count: {index}\n");
+            Console.WriteLine($"\n{result}\nNode Count: {NodeCount}, Real Count: {index}\n");
+        }
+
+        public void Import(string fileName, Action<string[]>? action) {
+            string file = Path.GetFullPath(Path.Combine(Constants.FILE_PATH, fileName));
+
+            if (!File.Exists(file)) {
+                Console.WriteLine("Data file not found.");
+                return;
+            }
+
+            try {
+                using var reader = new StreamReader(file);
+                string? line;
+
+                while ((line = reader.ReadLine()) != null) {
+                    string[] parts = line.Split(';');
+
+                    if (parts.Length < 2) continue;
+
+                    action?.Invoke(parts);
+                }
+
+                Console.WriteLine("Data import complete.");
+            } catch (Exception ex) {
+                Console.WriteLine($"Import failed: {ex.Message}");
+            }
+        }
+
+        public void Export(string fileName) {
+            string file = Path.GetFullPath(Path.Combine(Constants.FILE_PATH, fileName));
+
+            if (!File.Exists(file)) {
+                Console.WriteLine("Data file not found.");
+                return;
+            }
+
+            if (Root == null) {
+                Console.WriteLine("Tree is empty");
+                return;
+            }
+
+            try {
+                using var writer = new StreamWriter(file);
+
+                Traversal<K, T>.LevelOrderTraversal(this, node => {
+                    string line = $"{node.KeyData.ExportKeys()};{node.NodeData.ExportItem()}";
+                    writer.WriteLine(line);
+                });
+
+                Console.WriteLine("Data export complete.");
+            } catch (Exception ex) {
+                Console.WriteLine($"Export failed: {ex.Message}");
+            }
         }
     }
 }
