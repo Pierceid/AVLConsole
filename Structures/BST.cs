@@ -158,11 +158,14 @@ namespace AVLConsole.Structures {
             while (current != null) {
                 int cmp = current.KeyData.Compare(lower);
 
-                if (cmp >= 0) {
+                if (cmp > 0) {
                     start = current;
                     current = current.LeftSon;
-                } else {
+                } else if (cmp < 0) {
                     current = current.RightSon;
+                } else {
+                    start = current;
+                    break;
                 }
             }
 
