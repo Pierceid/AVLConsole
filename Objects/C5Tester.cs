@@ -4,7 +4,7 @@ using C5;
 namespace AVLConsole.Objects {
     public class C5Number() : Number, IComparable<Number> {
         public int CompareTo(Number? other) {
-            return Util.CompareIntegers(Value, other?.Value ?? 0);
+            return Util.CompareNumbers(Value, other?.Value ?? 0);
         }
     }
 
@@ -21,7 +21,7 @@ namespace AVLConsole.Objects {
 
         public void Insert(int count, bool rng) {
             for (int i = 0; i < count; i++) {
-                int value = rng ? random.Next() : i;
+                double value = rng ? random.Next() : i;
                 C5Number key = new() { Value = value };
 
                 try {

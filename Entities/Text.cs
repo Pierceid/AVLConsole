@@ -13,7 +13,7 @@ namespace AVLConsole.Entities {
         }
 
         public int Compare(Text other) {
-            return Util.CompareStrings(Value, other.Value);
+            return Util.CompareTexts(Value, other.Value);
         }
 
         public Text ImportKeys(string line) {

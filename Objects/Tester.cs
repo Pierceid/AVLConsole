@@ -22,7 +22,7 @@ namespace AVLConsole.Objects {
                 double rng = random.NextDouble();
 
                 if (rng < 0.5) {
-                    int value = random.Next();
+                    double value = random.Next();
                     Number key = new() { Value = value };
 
                     try {
@@ -102,7 +102,7 @@ namespace AVLConsole.Objects {
 
         public void Insert(int count, bool rng) {
             for (int i = 0; i < count; i++) {
-                int value = rng ? random.Next() : i;
+                double value = rng ? random.Next() : i;
                 Number key = new() { Value = value };
 
                 try {
@@ -128,7 +128,7 @@ namespace AVLConsole.Objects {
                 Number oldKey = keys[idx];
                 Number oldData = oldKey;
 
-                int newValue = random.Next();
+                double newValue = random.Next();
                 Number newKey = new() { Value = newValue };
                 Number newData = newKey;
 

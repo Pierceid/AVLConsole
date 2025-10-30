@@ -2,22 +2,22 @@
 
 namespace AVLConsole.Entities {
     public class Number : Item, IKey<Number> {
-        public int Value { get; set; }
+        public double Value { get; set; }
 
         public Number() {
             Value = 0;
         }
 
-        public Number(int value) {
+        public Number(double value) {
             Value = value;
         }
 
         public int Compare(Number other) {
-            return Util.CompareIntegers(Value, other.Value);
+            return Util.CompareNumbers(Value, other.Value);
         }
 
         public Number ImportKeys(string line) {
-            if (int.TryParse(line, out int parsedValue)) {
+            if (double.TryParse(line, out double parsedValue)) {
                 return new Number(parsedValue);
             }
             throw new FormatException($"Invalid key format: {line}");
@@ -28,7 +28,7 @@ namespace AVLConsole.Entities {
         }
 
         public override Item ImportItem(string line) {
-            if (int.TryParse(line, out int parsedValue)) {
+            if (double.TryParse(line, out double parsedValue)) {
                 return new Number(parsedValue);
             }
             throw new FormatException($"Invalid item format: {line}");

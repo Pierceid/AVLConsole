@@ -15,8 +15,8 @@ namespace AVLConsole {
         private const int maxCount = 2_000_000;
 
         static void Main(string[] args) {
-            //Tester<BST<Number, Number>> tester = new();
-            Tester<AVL<Number, Number>> tester = new();
+            Tester<BST<Number, Number>> tester = new();
+            //Tester<AVL<Number, Number>> tester = new();
             //C5Tester tester = new();
 
             // FUNCTIONS TEST
