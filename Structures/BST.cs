@@ -1,7 +1,5 @@
 ﻿using AVLConsole.Entities;
 using AVLConsole.Objects;
-using C5;
-using Xceed.Wpf.Toolkit;
 
 namespace AVLConsole.Structures {
     public class BST<K, T> where K : IKey<K>, new() where T : Item, new() {
@@ -324,6 +322,11 @@ namespace AVLConsole.Structures {
             } catch (Exception ex) {
                 Console.WriteLine($"Export failed: {ex.Message}");
             }
+        }
+
+        public void Clear() {
+            Root = null;
+            NodeCount = 0;
         }
     }
 }
