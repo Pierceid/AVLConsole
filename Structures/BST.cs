@@ -300,11 +300,6 @@ namespace AVLConsole.Structures {
         public void Export(string fileName) {
             string file = Path.GetFullPath(Path.Combine(Constants.FILE_PATH, fileName));
 
-            if (!File.Exists(file)) {
-                Console.WriteLine("Data file not found.");
-                return;
-            }
-
             if (Root == null) {
                 Console.WriteLine("Tree is empty");
                 return;
